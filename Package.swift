@@ -1,9 +1,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "language-server-protocol-swift",
+    name: "langserver-swift",
+    targets: [
+        Target(name: "JSONRPC"),
+        Target(name: "LanguageServer", dependencies: ["JSONRPC"])
+    ],
     dependencies: [
-        .Package(url: "https://github.com/czechboy0/Socks.git", majorVersion: 0, minor: 12),
-        .Package(url: "https://github.com/IBM-Swift/BlueSocket.git", majorVersion: 0, minor: 10)
+        .Package(url: "https://github.com/IBM-Swift/BlueSocket.git", majorVersion: 0, minor: 11)
     ]
 )
