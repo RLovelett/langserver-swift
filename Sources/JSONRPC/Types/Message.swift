@@ -2,11 +2,11 @@ import Foundation
 
 private let pattern = Data(bytes: [0x0D, 0x0A, 0x0D, 0x0A])
 
-struct IncomingMessage {
+public struct IncomingMessage {
     let header: [String : String]
-    let content: Request
+    public let content: Request
 
-    init(_ data: Data) throws {
+    public init(_ data: Data) throws {
         let headerTerminator = data.range(of: pattern)
 
         if let headerRange = headerTerminator.map({ Range<Data.Index>(0..<$0.upperBound) }) {
@@ -33,15 +33,20 @@ struct IncomingMessage {
     }
 }
 
-struct OutgoingMessage: CustomStringConvertible {
+public struct OutgoingMessage: CustomStringConvertible {
     let header: [String : String]
     let content: Response
 
-    var description: String {
+    public init(header: [String : String], content: Response) {
+        self.header = header
+        self.content = content
+    }
+
+    public var description: String {
         return String(data: data, encoding: .utf8) ?? "Could not convert to UTF-8"
     }
 
-    var data: Data {
+    public var data: Data {
         var mutableHeader = header
 
         guard let jsonData = try? JSONSerialization.data(withJSONObject: content.json, options: .prettyPrinted) else {

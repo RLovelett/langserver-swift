@@ -2,7 +2,53 @@ import Dispatch
 import Foundation
 import Socket
 
-public class Server {
+public struct StandIOServer {
+
+    let queue = DispatchQueue.global(qos: .userInteractive)
+
+    let closure: (Request) -> (Response)
+
+    public init(closure: @escaping (Request) -> (Response)) {
+        self.closure = closure
+    }
+
+    public func start() {
+        queue.async {
+            let stdin = FileHandle.standardInput
+            let stdout = FileHandle.standardOutput
+
+            do {
+                repeat {
+                    let buffer = stdin.availableData
+                    guard !buffer.isEmpty else {
+                        continue
+                    }
+
+                    let str = String(data: buffer, encoding: .utf8)
+                    NSLog(str ?? "Expected UTF-8 encoding")
+
+                    do {
+                        let message = try IncomingMessage(buffer)
+                        let response = self.closure(message.content)
+                        let toSend = OutgoingMessage(header: header, content: response)
+                        stdout.write(toSend.data)
+                    } catch let error as PredefinedError {
+                        let response = Response(to: .Null, result: .Error(error))
+                        let toSend = OutgoingMessage(header: header, content: response)
+                        stdout.write(toSend.data)
+                    }
+
+                } while true
+
+            } catch {
+                fatalError("TODO: Better error handeling. \(error)")
+            }
+        }
+    }
+
+}
+
+final public class Server {
 
     static let BUFFER_SIZE = 4096
 
@@ -105,13 +151,13 @@ fileprivate class Connection {
                     print(toSend)
                     _ = try self.socket.write(from: toSend.data)
                 }
-
+                
             } while !self.socket.remoteConnectionClosed
-
+            
             beforeClose(self)
         } catch {
             fatalError("TODO: Better error handeling. \(error)")
         }
     }
-
+    
 }
