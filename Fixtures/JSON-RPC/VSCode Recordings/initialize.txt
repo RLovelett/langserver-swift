@@ -1,0 +1,1 @@
+Content-Length: 185\r\n\r\n{\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"initialize\",\"params\":{\"processId\":65017,\"rootPath\":\"/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple\",\"capabilities\":{},\"trace\":\"off\"}}

@@ -1,0 +1,106 @@
+{
+      "key.hash": "1UO7GJT73BI7M",
+      "key.entities": [
+            {
+                  "key.line": 1,
+                  "key.name": "Bar",
+                  "key.usr": "s:V4main3Bar",
+                  "key.column": 8,
+                  "key.kind": "source.lang.swift.decl.struct",
+                  "key.entities": [
+                        {
+                              "key.line": 2,
+                              "key.name": "x",
+                              "key.usr": "s:vV4main3Bar1xSi",
+                              "key.column": 9,
+                              "key.kind": "source.lang.swift.decl.var.instance"
+                        },
+                        {
+                              "key.line": 2,
+                              "key.name": "Int",
+                              "key.usr": "s:Si",
+                              "key.column": 12,
+                              "key.kind": "source.lang.swift.ref.struct"
+                        },
+                        {
+                              "key.line": 3,
+                              "key.name": "y",
+                              "key.usr": "s:vV4main3Bar1ySS",
+                              "key.column": 9,
+                              "key.kind": "source.lang.swift.decl.var.instance"
+                        },
+                        {
+                              "key.line": 3,
+                              "key.name": "String",
+                              "key.usr": "s:SS",
+                              "key.column": 12,
+                              "key.kind": "source.lang.swift.ref.struct"
+                        }
+                  ]
+            },
+            {
+                  "key.line": 6,
+                  "key.name": "Bar",
+                  "key.usr": "s:V4main3Bar",
+                  "key.column": 11,
+                  "key.kind": "source.lang.swift.decl.extension.struct",
+                  "key.entities": [
+                        {
+                              "key.line": 6,
+                              "key.name": "Bar",
+                              "key.usr": "s:V4main3Bar",
+                              "key.column": 11,
+                              "key.kind": "source.lang.swift.ref.struct"
+                        },
+                        {
+                              "key.line": 7,
+                              "key.name": "foo()",
+                              "key.usr": "s:FV4main3Bar3fooFT_Si",
+                              "key.column": 10,
+                              "key.kind": "source.lang.swift.decl.function.method.instance",
+                              "key.entities": [
+                                    {
+                                          "key.line": 7,
+                                          "key.name": "Int",
+                                          "key.usr": "s:Si",
+                                          "key.column": 19,
+                                          "key.kind": "source.lang.swift.ref.struct"
+                                    }
+                              ]
+                        }
+                  ]
+            },
+            {
+                  "key.line": 12,
+                  "key.name": "Blah",
+                  "key.usr": "s:V4mainP33_49CF099D6D8B13348A89A7583D18FBF54Blah",
+                  "key.column": 16,
+                  "key.kind": "source.lang.swift.decl.struct",
+                  "key.entities": [
+                        {
+                              "key.line": 13,
+                              "key.name": "x",
+                              "key.usr": "s:vV4mainP33_49CF099D6D8B13348A89A7583D18FBF54Blah1xVS_3Bar",
+                              "key.column": 9,
+                              "key.kind": "source.lang.swift.decl.var.instance"
+                        },
+                        {
+                              "key.line": 13,
+                              "key.name": "Bar",
+                              "key.usr": "s:V4main3Bar",
+                              "key.column": 12,
+                              "key.kind": "source.lang.swift.ref.struct"
+                        }
+                  ]
+            }
+      ],
+      "key.dependencies": [
+            {
+                  "key.hash": "1YNOQTS69N574",
+                  "key.name": "Swift",
+                  "key.filepath": "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/macosx\/x86_64\/Swift.swiftmodule",
+                  "key.kind": "source.lang.swift.import.module.swift",
+                  "key.is_system": true
+            }
+      ]
+}

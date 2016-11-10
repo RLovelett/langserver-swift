@@ -1,0 +1,1 @@
+"Content-Length: 76\r\n\r\n{\"jsonrpc\":\"2.0\",\"method\":\"$/setTraceNotification\",\"params\":{\"value\":\"off\"}}"
