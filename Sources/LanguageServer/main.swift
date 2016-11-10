@@ -25,93 +25,6 @@ log.add(destination: systemDestination)
 // Add basic app info, version info etc, to the start of the logs
 log.logAppDetails()
 
-let capabilities = ServerCapabilities(
-    textDocumentSync: .Full,
-    hoverProvider: nil,
-    completionProvider: nil,
-    signatureHelpProvider: nil,
-    definitiionProvider: false,
-    referencesProvider: false,
-    documentHighlighProvider: false,
-    documentSymbolProvider: false,
-    workspaceSymbolProvider: false,
-    codeActionProvider: false,
-    codeLensProvider: nil,
-    documentFormattingProvider: false,
-    documentRangeFormattingProvider: false,
-    documentOnTypeFormattingProvider: nil,
-    renameProvider: nil)
-let initResult = InitializeResult(capabilities)
-
-var workspace: Workspace?
-var exitCode: Int32 = 1
-
-let requestHandler: (JSONRPC.Request) -> (JSONRPC.Response) = { (request) in
-    switch request.method {
-    case "initialize":
-        guard let parameters = InitializeParams(parse: request.params) else {
-            let result = JSONRPC.Response.Result.Error(JSONRPC.PredefinedError.InvalidParams)
-            return JSONRPC.Response(to: request.id, result: result)
-        }
-        workspace = parameters.rootPath.map(Workspace.init(at:))
-        let response = JSONRPC.Response.Result.Success(initResult.toJSON)
-        return JSONRPC.Response(to: request.id, result: response)
-    case "textDocument/didOpen":
-        guard let parameters = DidOpenTextDocumentParams(parse: request.params) else {
-            let result = JSONRPC.Response.Result.Error(JSONRPC.PredefinedError.InvalidParams)
-            return JSONRPC.Response(to: request.id, result: result)
-        }
-        _ = workspace?.open(parameters.textDocument)
-        let response = JSONRPC.Response.Result.Success(nil)
-        return JSONRPC.Response(to: request.id, result: response)
-    case "textDocument/didChange":
-        guard let parameters = DidChangeTextDocumentParams(parse: request.params) else {
-            let result = JSONRPC.Response.Result.Error(JSONRPC.PredefinedError.InvalidParams)
-            return JSONRPC.Response(to: request.id, result: result)
-        }
-        _ = workspace?.update(parameters)
-        let response = JSONRPC.Response.Result.Success(nil)
-        return JSONRPC.Response(to: request.id, result: response)
-    case "textDocument/didClose":
-        guard let parameters = DidCloseTextDocumentParams(parse: request.params) else {
-            let result = JSONRPC.Response.Result.Error(JSONRPC.PredefinedError.InvalidParams)
-            return JSONRPC.Response(to: request.id, result: result)
-        }
-        let response = JSONRPC.Response.Result.Success(nil)
-        return JSONRPC.Response(to: request.id, result: response)
-    case "textDocument/didSave":
-        guard let parameters = DidSaveTextDocumentParams(parse: request.params) else {
-            let result = JSONRPC.Response.Result.Error(JSONRPC.PredefinedError.InvalidParams)
-            return JSONRPC.Response(to: request.id, result: result)
-        }
-        let response = JSONRPC.Response.Result.Success(nil)
-        return JSONRPC.Response(to: request.id, result: response)
-    case "textDocument/definition":
-        fatalError("Not implemented yet.")
-    case "textDocument/hover":
-        fatalError("Not implemented yet.")
-    case "textDocument/documentSymbol":
-        fatalError("Not implemented yet.")
-    case "textDocument/references":
-        fatalError("Not implemented yet.")
-    case "workspace/symbol":
-        fatalError("Not implemented yet.")
-    case "shutdown":
-        workspace = nil
-        // The server should exit with `success` code 0 if the shutdown request has been received
-        // before; otherwise with `error` code 1.
-        exitCode = 0
-        let response = JSONRPC.Response.Result.Success(nil)
-        return JSONRPC.Response(to: request.id, result: response)
-    case "exit":
-        exit(exitCode)
-    default:
-        let result = JSONRPC.Response.Result.Error(JSONRPC.PredefinedError.MethodNotFound)
-        return JSONRPC.Response(to: request.id, result: result)
-    }
-}
-
-
 private let header: [String : String] = [
     "Content-Type": "application/vscode-jsonrpc; charset=utf8"
 ]
@@ -133,20 +46,21 @@ dataAvailable = NotificationCenter.default.addObserver(forName: .NSFileHandleDat
     log.verbose(str)
 
     do {
-        let message = try IncomingMessage(buffer)
-        let response = requestHandler(message.content)
-        let toSend = OutgoingMessage(header: header, content: response)
+        let request = try Request(buffer)
+        let response = handle(request)
         /// If the request id is null then it is a notification and not a request
-        if case RequestID.Null = message.content.id {}
-        else {
+        if case Request.Identifier.null = request.id {
+            log.debug("The request was a notification and not a request.")
+        } else {
+            let toSend = response.data(header)
             log.debug(toSend)
-            FileHandle.standardOutput.write(toSend.data)
+            FileHandle.standardOutput.write(toSend)
         }
     } catch let error as PredefinedError {
-        let response = Response(to: .Null, result: .Error(error))
-        let toSend = OutgoingMessage(header: header, content: response)
+        let response = Response(is: error)
+        let toSend = response.data(header)
         log.debug(toSend)
-        FileHandle.standardOutput.write(toSend.data)
+        FileHandle.standardOutput.write(toSend)
     } catch {
         fatalError("TODO: Better error handeling. \(error)")
     }

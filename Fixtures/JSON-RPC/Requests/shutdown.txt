@@ -1,0 +1,4 @@
+Content-Length: 58
+Content-Type: application/vscode-jsonrpc; charset=utf8
+
+{"method":"shutdown","params":null,"id":1,"jsonrpc":"2.0"}

@@ -1,0 +1,37 @@
+{
+      "key.line": 1,
+      "key.name": "Bar",
+      "key.usr": "s:V4main3Bar",
+      "key.column": 8,
+      "key.kind": "source.lang.swift.decl.struct",
+      "key.entities": [
+            {
+                  "key.line": 2,
+                  "key.name": "x",
+                  "key.usr": "s:vV4main3Bar1xSi",
+                  "key.column": 9,
+                  "key.kind": "source.lang.swift.decl.var.instance"
+            },
+            {
+                  "key.line": 2,
+                  "key.name": "Int",
+                  "key.usr": "s:Si",
+                  "key.column": 12,
+                  "key.kind": "source.lang.swift.ref.struct"
+            },
+            {
+                  "key.line": 3,
+                  "key.name": "y",
+                  "key.usr": "s:vV4main3Bar1ySS",
+                  "key.column": 9,
+                  "key.kind": "source.lang.swift.decl.var.instance"
+            },
+            {
+                  "key.line": 3,
+                  "key.name": "String",
+                  "key.usr": "s:SS",
+                  "key.column": 12,
+                  "key.kind": "source.lang.swift.ref.struct"
+            }
+      ]
+}
