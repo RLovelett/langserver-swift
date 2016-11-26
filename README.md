@@ -32,3 +32,10 @@ Currently this implementation is used by [Swift for Visual Studio Code](https://
 % cd <path-to-clone>
 % swift build
 ```
+
+or with Xcode
+
+```
+% cd <path-to-clone>
+% swift package generate-xcodeproj --xcconfig-overrides settings.xcconfig
+```
