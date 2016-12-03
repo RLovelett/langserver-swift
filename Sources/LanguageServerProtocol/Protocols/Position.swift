@@ -6,11 +6,13 @@
 //
 //
 
+import Argo
 import JSONRPC
+import Ogra
 
 /// Position in a text document expressed as zero-based line and character offset. A position is
 /// between two characters like an 'insert' cursor in a editor.
-public protocol Position : Messageable {
+public protocol Position : Encodable {
 
     /// Line position in a document (zero-based).
     var line: Int { get }
@@ -22,12 +24,11 @@ public protocol Position : Messageable {
 
 extension Position {
 
-    var message: [String : Any]? {
-        // TODO: Probably need a better protocol here (i.e., the Optional is not really necessary)
-        return [
+    func encode() -> JSON {
+        return JSON([
             "line" : line,
             "character" : character
-        ]
+        ])
     }
 
 }

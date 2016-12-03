@@ -6,10 +6,12 @@
 //
 //
 
+import Argo
 import JSONRPC
+import Ogra
 
 /// The response to the 'initialize' request.
-public protocol InitializeResult : Messageable {
+public protocol InitializeResult : Encodable {
 
     /// The capabilities the language server provides.
     var capabilities: ServerCapabilities { get }
@@ -18,12 +20,10 @@ public protocol InitializeResult : Messageable {
 
 extension WorkspaceInitializationResult {
 
-    public var message: [String : Any]? {
-        // TODO: Probably need a better protocol here (i.e., the Optional is not really necessary)
-        guard let c = capabilities.message else { return nil }
-        return [
-            "capabilities": c
-        ]
+    public func encode() -> JSON {
+        return JSON.object([
+            "capabilities": capabilities.encode()
+        ])
     }
 
 }

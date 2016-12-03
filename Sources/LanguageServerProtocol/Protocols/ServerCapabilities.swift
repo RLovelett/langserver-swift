@@ -6,10 +6,13 @@
 //
 //
 
+import Argo
+import Foundation
 import JSONRPC
+import Ogra
 
 /// The capabilities the language server provides.
-public protocol ServerCapabilities : Messageable {
+public protocol ServerCapabilities : Encodable {
 
     /// Defines how text documents are synced.
     var textDocumentSync: TextDocumentSyncKind? { get }
@@ -46,28 +49,28 @@ public protocol ServerCapabilities : Messageable {
 
 }
 
-extension WorkspaceCapabilities : Messageable {
+extension ServerCapabilities {
 
-    var message: [String : Any]? {
-        var obj: [String : Any] = [ : ]
+    public func encode() -> JSON {
+        var obj: [String : JSON] = [ : ]
 
         if let textDocumentSync = self.textDocumentSync {
-            obj["textDocumentSync"] = textDocumentSync.rawValue
+            obj["textDocumentSync"] = JSON.number(NSNumber(value: textDocumentSync.rawValue))
         }
 
         if let hoverProvider = self.hoverProvider {
-            obj["hoverProvider"] = hoverProvider
+            obj["hoverProvider"] = JSON.bool(hoverProvider)
         }
 
         if let definitiionProvider = self.definitiionProvider {
-            obj["definitionProvider"] = definitiionProvider
+            obj["definitionProvider"] = JSON.bool(definitiionProvider)
         }
 
         if let workspaceSymbolProvider = self.workspaceSymbolProvider {
-            obj["workspaceSymbolProvider"] = workspaceSymbolProvider
+            obj["workspaceSymbolProvider"] = JSON.bool(workspaceSymbolProvider)
         }
 
-        return obj
+        return JSON.object(obj)
     }
 
 }

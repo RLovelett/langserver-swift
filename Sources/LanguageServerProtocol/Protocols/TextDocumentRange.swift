@@ -6,11 +6,13 @@
 //
 //
 
+import Argo
 import JSONRPC
+import Ogra
 
 /// A range in a text document expressed as (zero-based) start and end positions. A range is
 /// comparable to a selection in an editor. Therefore the end position is exclusive.
-public protocol TextDocumentRange : Messageable {
+public protocol TextDocumentRange : Encodable {
 
     /// The range's start position.
     var start: Position { get }
@@ -22,13 +24,11 @@ public protocol TextDocumentRange : Messageable {
 
 extension TextDocumentRange {
 
-    var message: [String : Any]? {
-        // TODO: Probably need a better protocol here (i.e., the Optional is not really necessary)
-        guard let start = self.start.message, let end = self.end.message else { return nil }
-        return [
-            "start" : start,
-            "end" : end
-        ]
+    public func encode() -> JSON {
+        return JSON.object([
+            "start" : start.encode(),
+            "end" : end.encode()
+        ])
     }
 
 }

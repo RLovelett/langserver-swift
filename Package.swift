@@ -3,7 +3,8 @@ import PackageDescription
 let package = Package(
     name: "langserver-swift",
     targets: [
-        Target(name: "JSONRPC"),
+        Target(name: "Ogra"),
+        Target(name: "JSONRPC", dependencies: ["Ogra"]),
         Target(name: "LanguageServerProtocol", dependencies: ["JSONRPC"]),
         Target(name: "LanguageServer", dependencies: ["LanguageServerProtocol", "JSONRPC"])
     ],

@@ -6,6 +6,7 @@
 //
 //
 
+import Argo
 import Foundation
 import JSONRPC
 import LanguageServerProtocol
@@ -47,7 +48,7 @@ func handle(_ request: Request) -> Response {
             // The server should exit with `success` code 0 if the shutdown request has been received
             // before; otherwise with `error` code 1.
             exitCode = 0
-            return Response(to: request, is: EmptyMessage())
+            return Response(to: request, is: JSON.null)
         case "exit":
             exit(exitCode)
         default:

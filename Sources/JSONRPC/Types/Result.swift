@@ -6,7 +6,9 @@
 //
 //
 
+import Ogra
+
 public enum Result {
-    case success(Messageable)
+    case success(Encodable)
     case error(ServerError)
 }

@@ -6,10 +6,12 @@
 //
 //
 
+import Argo
 import JSONRPC
+import Ogra
 
 /// Represents a location inside a resource, such as a line inside a text file.
-public protocol Location : Messageable {
+public protocol Location : Encodable {
 
     var uri: String { get }
 
@@ -19,12 +21,11 @@ public protocol Location : Messageable {
 
 extension Location {
 
-    public var message: [ String : Any ]? {
-        guard let message = range.message else { return nil }
-        return [
-            "uri" : uri,
-            "range" : message
-        ]
+    public func encode() -> JSON {
+        return JSON.object([
+            "uri" : JSON.string(uri),
+            "range" : range.encode()
+        ])
     }
 
 }
