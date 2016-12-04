@@ -1,0 +1,11 @@
+{
+  "key.kind": "source.lang.swift.decl.function.constructor",
+  "key.name": "x:y:)",
+  "key.sourcetext": "x: <#T##Int#>, y: <#T##String#>)",
+  "key.description": "(x: Int, y: String)",
+  "key.typename": "Bar",
+  "key.modulename": "Test",
+  "key.context": "source.codecompletion.context.thisclass",
+  "key.num_bytes_to_erase": 0,
+  "key.associated_usrs": "s:FV4Test3BarcFT1xSi1ySS_S0_"
+}

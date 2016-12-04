@@ -7,22 +7,34 @@
 //
 
 import Argo
+import Curry
 import JSONRPC
 import Ogra
+import Runes
 
 /// A range in a text document expressed as (zero-based) start and end positions. A range is
 /// comparable to a selection in an editor. Therefore the end position is exclusive.
-public protocol TextDocumentRange : Encodable {
+struct TextDocumentRange {
 
     /// The range's start position.
-    var start: Position { get }
+    let start: Position
 
     /// The range's start position.
-    var end: Position { get }
+    let end: Position
 
 }
 
-extension TextDocumentRange {
+extension TextDocumentRange : Decodable {
+
+    static func decode(_ json: JSON) -> Decoded<TextDocumentRange> {
+        let start: Decoded<Position> = json <| "start"
+        let end: Decoded<Position> = json <| "end"
+        return curry(TextDocumentRange.init) <^> start <*> end
+    }
+
+}
+
+extension TextDocumentRange : Encodable {
 
     public func encode() -> JSON {
         return JSON.object([

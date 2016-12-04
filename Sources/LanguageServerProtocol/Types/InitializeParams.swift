@@ -6,19 +6,33 @@
 //
 //
 
+import Argo
+import Curry
+import Runes
+
 /// The initialize request is sent as the first request from the client to the server.
-public protocol InitializeParams {
+public struct InitializeParams {
 
     /// The process Id of the parent process that started the server. Is null if the process has not
     /// been started by another process.
     /// If the parent process is not alive then the server should exit (see exit notification) its
     /// process.
-    var processId: Int? { get }
+    let processId: Int?
 
     /// The rootPath of the workspace. Is null if no folder is open.
-    var rootPath: String? { get }
+    let rootPath: String?
 
     /// User provided initialization options.
-    var initializationOptions: Any? { get }
+    let initializationOptions: Any?
 
+}
+
+extension InitializeParams : Decodable {
+
+    public static func decode(_ json: JSON) -> Decoded<InitializeParams> {
+        let p: Decoded<Int?> = json <|? "processId"
+        let r: Decoded<String?> = json <|? "rootPath"
+        return curry(InitializeParams.init) <^> p <*> r <*> pure(.none)
+    }
+    
 }

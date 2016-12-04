@@ -11,15 +11,15 @@ import JSONRPC
 import Ogra
 
 /// Represents a location inside a resource, such as a line inside a text file.
-public protocol Location : Encodable {
+public struct Location {
 
-    var uri: String { get }
+    let uri: String
 
-    var range: TextDocumentRange { get }
+    let range: TextDocumentRange
 
 }
 
-extension Location {
+extension Location : Encodable {
 
     public func encode() -> JSON {
         return JSON.object([

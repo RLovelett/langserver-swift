@@ -1,0 +1,9 @@
+{
+    "key.context" : "source.codecompletion.context.none",
+    "key.description" : "import",
+    "key.sourcetext" : "import",
+    "key.typename" : "",
+    "key.name" : "import",
+    "key.num_bytes_to_erase" : 0,
+    "key.kind" : "source.lang.swift.keyword"
+}

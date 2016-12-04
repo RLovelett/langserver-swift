@@ -31,14 +31,14 @@ class LineCollectionTests: XCTestCase {
             let lc = try LineCollection(for: url)
 
             // All should be valid
-            XCTAssertEqual(try lc.byteOffset(at: LinePosition(line: 0, character: 0)),      0)
-            XCTAssertEqual(try lc.byteOffset(at: LinePosition(line: 2, character: 0)),     37)
-            XCTAssertEqual(try lc.byteOffset(at: LinePosition(line: 97, character: 13)), 4222)
-            XCTAssertEqual(try lc.byteOffset(at: LinePosition(line: 105, character: 1)), 4617)
+            XCTAssertEqual(try lc.byteOffset(at: Position(line: 0, character: 0)),      0)
+            XCTAssertEqual(try lc.byteOffset(at: Position(line: 2, character: 0)),     37)
+            XCTAssertEqual(try lc.byteOffset(at: Position(line: 97, character: 13)), 4222)
+            XCTAssertEqual(try lc.byteOffset(at: Position(line: 105, character: 1)), 4617)
 
             // All should be out of range
-            XCTAssertNil(try lc.byteOffset(at: LinePosition(line: 0, character: 106)))
-            XCTAssertNil(try lc.byteOffset(at: LinePosition(line: 106, character: 0)))
+            XCTAssertNil(try lc.byteOffset(at: Position(line: 0, character: 106)))
+            XCTAssertNil(try lc.byteOffset(at: Position(line: 106, character: 0)))
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -54,10 +54,10 @@ class LineCollectionTests: XCTestCase {
             let lc = try LineCollection(for: url)
 
             // All should be valid
-            XCTAssertEqual(try lc.position(for:    0), LinePosition(line:   0, character:  0))
-            XCTAssertEqual(try lc.position(for:   37), LinePosition(line:   2, character:  0))
-            XCTAssertEqual(try lc.position(for: 4222), LinePosition(line:  97, character: 13))
-            XCTAssertEqual(try lc.position(for: 4617), LinePosition(line: 105, character:  1))
+            XCTAssertEqual(try lc.position(for:    0), Position(line:   0, character:  0))
+            XCTAssertEqual(try lc.position(for:   37), Position(line:   2, character:  0))
+            XCTAssertEqual(try lc.position(for: 4222), Position(line:  97, character: 13))
+            XCTAssertEqual(try lc.position(for: 4617), Position(line: 105, character:  1))
 
             // All should be out of range
             XCTAssertNil(try lc.position(for: -100))

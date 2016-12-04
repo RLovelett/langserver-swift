@@ -30,6 +30,7 @@ fileprivate let shutdown = loadFixture("shutdown.txt", in: "JSON-RPC/JSON")
 fileprivate let valid = loadFixture("valid.txt", in: "JSON-RPC/JSON")
 fileprivate let valid2 = loadFixture("valid-2.txt", in: "JSON-RPC/JSON")
 fileprivate let validWithoutHeader = loadFixture("valid-without-header.txt", in: "JSON-RPC/JSON")
+fileprivate let textDocumentDidOpen = loadFixture("textDocument-didOpen.txt", in: "JSON-RPC/JSON")
 
 class RequestTests: XCTestCase {
 
@@ -134,6 +135,18 @@ class RequestTests: XCTestCase {
             let r = try Request(message)
             XCTAssertEqual(r.method, "shutdown")
             XCTAssertEqual(r.id, Request.Identifier.number(1))
+        } catch {
+            XCTFail("Should have been a valid Request.")
+        }
+    }
+
+    func testTextDocumentDidOpen() {
+        let message = textDocumentDidOpen!
+
+        do {
+            let r = try Request(message)
+            XCTAssertEqual(r.method, "textDocument/didOpen")
+            XCTAssertNil(r.id)
         } catch {
             XCTFail("Should have been a valid Request.")
         }

@@ -1,0 +1,12 @@
+{
+    "key.modulename" : "Swift",
+    "key.doc.brief" : "A set of common requirements for Swift’s integer types.",
+    "key.associated_usrs" : "s:Ps7Integer",
+    "key.description" : "Integer",
+    "key.sourcetext" : "Integer",
+    "key.typename" : "Integer",
+    "key.context" : "source.codecompletion.context.othermodule",
+    "key.name" : "Integer",
+    "key.num_bytes_to_erase" : 0,
+    "key.kind" : "source.lang.swift.decl.protocol"
+}

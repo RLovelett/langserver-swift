@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift","languageId":"swift","version":1,"text":"let x = Bar(x: 1, y: \"Ryan\")\nlet y = Bar(x\nprint(x.y)\n"}}}

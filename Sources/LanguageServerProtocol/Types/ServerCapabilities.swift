@@ -12,44 +12,47 @@ import JSONRPC
 import Ogra
 
 /// The capabilities the language server provides.
-public protocol ServerCapabilities : Encodable {
+public struct ServerCapabilities {
 
     /// Defines how text documents are synced.
-    var textDocumentSync: TextDocumentSyncKind? { get }
+    let textDocumentSync: TextDocumentSyncKind?
 
     /// The server provides hover support.
-    var hoverProvider: Bool? { get }
+    let hoverProvider: Bool?
+
+    /// The server provides completion support.
+    let completionProvider: CompletionOptions?
 
     /// The server provides goto definition support.
-    var definitiionProvider: Bool? { get }
+    let definitiionProvider: Bool?
 
     /// The server provides find references support.
-    var referencesProvider: Bool? { get }
+    let referencesProvider: Bool?
 
     /// The server provides document highlight support.
-    var documentHighlighProvider: Bool? { get }
+    let documentHighlighProvider: Bool?
 
     /// The server provides document symbol support.
-    var documentSymbolProvider: Bool? { get }
+    let documentSymbolProvider: Bool?
 
     /// The server provides workspace symbol support.
-    var workspaceSymbolProvider: Bool? { get }
+    let workspaceSymbolProvider: Bool?
 
     /// The server provides code actions.
-    var codeActionProvider: Bool? { get }
+    let codeActionProvider: Bool?
 
     /// The server provides document formatting.
-    var documentFormattingProvider: Bool? { get }
+    let documentFormattingProvider: Bool?
 
     /// The server provides document range formatting.
-    var documentRangeFormattingProvider: Bool? { get }
+    let documentRangeFormattingProvider: Bool?
 
     /// The server provides rename support.
-    var renameProvider: Bool? { get }
+    let renameProvider: Bool?
 
 }
 
-extension ServerCapabilities {
+extension ServerCapabilities : Encodable {
 
     public func encode() -> JSON {
         var obj: [String : JSON] = [ : ]
@@ -60,6 +63,10 @@ extension ServerCapabilities {
 
         if let hoverProvider = self.hoverProvider {
             obj["hoverProvider"] = JSON.bool(hoverProvider)
+        }
+
+        if let completionProvider = self.completionProvider {
+            obj["completionProvider"] = completionProvider.encode()
         }
 
         if let definitiionProvider = self.definitiionProvider {

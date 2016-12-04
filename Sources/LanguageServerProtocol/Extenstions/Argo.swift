@@ -11,7 +11,8 @@ import Foundation
 import SourceKittenFramework
 
 extension Request {
-    func x<T: Decodable>() -> Decoded<T> where T.DecodedType == T {
+
+    func decode<T: Decodable>() -> Decoded<T> where T.DecodedType == T {
         do {
             let json: Any = try self.failableSend()
             return T.decode(JSON(json))
@@ -19,4 +20,15 @@ extension Request {
             return .customError(error.localizedDescription)
         }
     }
+
+    func decode<T: Decodable>() -> Decoded<[T]> where T.DecodedType == T {
+        do {
+            let json: Any = try self.failableSend()
+            let result: Decoded<[T]> = JSON(json) <|| "key.results"
+            return result
+        } catch {
+            return .customError(error.localizedDescription)
+        }
+    }
+
 }

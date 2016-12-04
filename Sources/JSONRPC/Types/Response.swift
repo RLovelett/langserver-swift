@@ -36,6 +36,15 @@ public struct Response {
         }
     }
 
+    public init<C: Collection>(to request: Request, is message: C) where C.Iterator.Element: Encodable {
+        switch request {
+        case .notification(_, _):
+            json = .null
+        case .request(id: let id, _, _):
+            self = Response(is: .success(message.encode()), for: id)
+        }
+    }
+
     private init(is result: Result, for id: Request.Identifier) {
         var obj: [String : JSON] = [
             "jsonrpc" : JSON.string("2.0")

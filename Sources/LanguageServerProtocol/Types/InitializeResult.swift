@@ -11,14 +11,18 @@ import JSONRPC
 import Ogra
 
 /// The response to the 'initialize' request.
-public protocol InitializeResult : Encodable {
+public struct InitializeResult {
 
     /// The capabilities the language server provides.
-    var capabilities: ServerCapabilities { get }
+    let capabilities: ServerCapabilities
+
+    public init(_ c: ServerCapabilities) {
+        capabilities = c
+    }
 
 }
 
-extension WorkspaceInitializationResult {
+extension InitializeResult : Encodable {
 
     public func encode() -> JSON {
         return JSON.object([

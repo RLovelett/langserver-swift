@@ -48,20 +48,20 @@ struct LineCollection {
         return offset
     }
 
-    func position(for offset: Int) throws -> LinePosition {
+    func position(for offset: Int) throws -> Position {
         guard let lineIndex = lines.index(where: { $0.contains(offset) }) else { throw WorkspaceError.positionNotFound }
         let lineRange = lines[lineIndex]
         let x = offset - lineRange.lowerBound
-        let position = LinePosition(line: lineIndex, character: x)
+        let position = Position(line: lineIndex, character: x)
         return position
     }
 
-    func selection(for c: Cursor) throws -> TextSelection {
+    func selection(for c: Cursor) throws -> TextDocumentRange {
         let startOffset = Int(c.offset)
         let endOffset = Int(c.offset + c.length)
         let start = try position(for: startOffset)
         let end = try position(for: endOffset)
-        return TextSelection(start: start, end: end)
+        return TextDocumentRange(start: start, end: end)
     }
 
 }
