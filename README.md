@@ -15,7 +15,7 @@ Currently this implementation is used by [Swift for Visual Studio Code](https://
 
 ### Swift
 
-* Swift Open Source `swift-3.0-RELEASE` toolchain (**Minimum REQUIRED for latest release**)
+* Swift Open Source `swift-DEVELOPMENT-SNAPSHOT-2016-12-01-a` toolchain (**Minimum REQUIRED for latest release**)
 
 ### macOS
 
@@ -30,7 +30,7 @@ Currently this implementation is used by [Swift for Visual Studio Code](https://
 
 ```
 % cd <path-to-clone>
-% swift build
+% swift build -Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
 ```
 
 or with Xcode
@@ -38,4 +38,11 @@ or with Xcode
 ```
 % cd <path-to-clone>
 % swift package generate-xcodeproj --xcconfig-overrides settings.xcconfig
+```
+
+## Test
+
+```
+% cd <path-to-clone>
+% swift test -Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
 ```
