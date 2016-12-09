@@ -6,6 +6,7 @@
 //
 //
 
+import Argo
 import Foundation
 @testable import JSONRPC
 import XCTest
@@ -17,7 +18,8 @@ fileprivate func stringify(_ data: Data) -> String {
 class ResponseTests: XCTestCase {
 
     func testSendingErrorMessage() {
-        let response = Response(is: PredefinedError.internalError, for: .number(1))
+        let request = Request.request(id: .number(1), method: "", params: JSON.null)
+        let response = Response(to: request, is: PredefinedError.internalError)
         let message = stringify(response.data([ : ]))
         XCTAssert(message.contains("Content-Length: 108\r\n"))
         XCTAssert(message.contains("\"id\" : 1"))

@@ -19,7 +19,7 @@ func handle(_ request: Request) -> Response {
         case "initialize":
             let parameters: WorkspaceInitializer = try request.parse()
             workspace = Workspace(parameters)
-            let response = Response(is: WorkspaceInitializationResult(workspace!.capabilities), for: request.id)
+            let response = Response(to: request, is: WorkspaceInitializationResult(workspace!.capabilities))
             return response
         case "textDocument/didOpen":
             fatalError("Not implemented yet.")
@@ -32,7 +32,7 @@ func handle(_ request: Request) -> Response {
         case "textDocument/definition":
             let parameters: SourcePosition = try request.parse()
             let location = try workspace!.findDeclaration(forText: parameters)
-            let response = Response(is: location, for: request.id)
+            let response = Response(to: request, is: location)
             return response
         case "textDocument/hover":
             fatalError("Not implemented yet.")
@@ -47,15 +47,15 @@ func handle(_ request: Request) -> Response {
             // The server should exit with `success` code 0 if the shutdown request has been received
             // before; otherwise with `error` code 1.
             exitCode = 0
-            return Response(is: EmptyMessage(), for: request.id)
+            return Response(to: request, is: EmptyMessage())
         case "exit":
             exit(exitCode)
         default:
             throw PredefinedError.methodNotFound
         }
     } catch let error as ServerError {
-        return Response(is: error, for: request.id)
+        return Response(to: request, is: error)
     } catch {
-        return Response(is: PredefinedError.invalidParams, for: request.id)
+        return Response(to: request, is: PredefinedError.invalidParams)
     }
 }

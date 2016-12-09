@@ -14,17 +14,27 @@ fileprivate let pattern = headerTerminator.data(using: .utf8)!
 
 public struct Response {
 
-    let json: [ String : Any ]
+    var json: [ String : Any ]
 
-    public init(is message: Messageable, for id: Request.Identifier = .null) {
-        self = Response(is: .success(message), for: id)
+    public init(to request: Request, is message: Messageable) {
+        switch request {
+        case .notification(method: _, params: _):
+            json = [ : ]
+        case .request(id: let id, method: _, params: _):
+            self = Response(is: .success(message), for: id)
+        }
     }
 
-    public init(is error: ServerError, for id: Request.Identifier = .null) {
-        self = Response(is: .error(error), for: id)
+    public init(to request: Request, is error: ServerError) {
+        switch request {
+        case .notification(method: _, params: _):
+            json = [ : ]
+        case .request(id: let id, method: _, params: _):
+            self = Response(is: .error(error), for: id)
+        }
     }
 
-    init(is result: Result, for id: Request.Identifier = .null) {
+    private init(is result: Result, for id: Request.Identifier) {
         var obj: [String : Any] = [
             "jsonrpc" : "2.0"
         ]
@@ -32,7 +42,6 @@ public struct Response {
         switch id {
         case .number(let val): obj["id"] = val
         case .string(let val): obj["id"] = val
-        case .null: obj["id"] = NSNull()
         }
 
         switch result {

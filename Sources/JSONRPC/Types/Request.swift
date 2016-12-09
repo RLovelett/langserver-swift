@@ -11,41 +11,70 @@ import Curry
 import Foundation
 import Runes
 
-fileprivate let pattern = Data(bytes: [0x0D, 0x0A, 0x0D, 0x0A])
+/// A JSON-RPC
+public enum Request {
 
-fileprivate func defineHeaderExtent(_ range: Range<Data.Index>) -> Range<Data.Index> {
-    return Range<Data.Index>(0..<range.upperBound)
-}
+    case request(id: Identifier, method: String, params: JSON)
 
-fileprivate func seperateHeaderFromBody(_ data: Data) -> (header: Data?, body: Data) {
-    guard let headerRange = data.range(of: pattern).map(defineHeaderExtent) else {
-        // Default to an empty header set
-        // Perhaps this should be an error?
-        return (nil, data)
-    }
-    let bodyRange = Range<Data.Index>(headerRange.upperBound..<data.count)
-    return (data.subdata(in: headerRange), data.subdata(in: bodyRange))
-}
+    /// A Notification is a `Request` object without an "id" member. A `Request` object that is a
+    /// Notification signifies the Client's lack of interest in the corresponding `Response` object,
+    /// and as such no `Response` object needs to be returned to the client.
+    ///
+    /// The Server **MUST NOT** reply to a Notification, including those that are within a batch
+    /// request.
+    case notification(method: String, params: JSON)
 
-/// This type represents the 
-public struct Request {
-
+    /// An identifier established by the Client that **MUST** contain a `String`, `Int`, or `null`
+    /// value _if included_.
+    ///
+    /// If it is not included it is assumed to be a notification.
+    ///
+    /// The value **MUST** not be `null` and numbers **MUST NOT** contain fractional parts.
+    ///
+    /// - Remark: This is a change from the 2.0 spec, `null` was acceptable. Though strongly
+    /// encouraged against. Likewise, fractional numeric identifiers.
+    ///
+    /// - string: An identifier established by the Client that is a `String`.
+    /// - number: An identifier established by the Client that is a `Int`.
     public enum Identifier {
         case string(String)
         case number(Int)
-        case null
     }
 
-    public let method: String
+    /// A String containing the name of the method to be invoked. Method names that begin with the
+    /// word rpc followed by a period character (U+002E or ASCII 46) are reserved for rpc-internal
+    /// methods and extensions and MUST NOT be used for anything else.
+    public var method: String {
+        switch self {
+        case .request(id: _, method: let m, params: _):
+            return m
+        case .notification(method: let m, params: _):
+            return m
+        }
+    }
 
-    public let id: Identifier
+    /// An identifier established by the Client. If it is not present, e.g., `Optional.none`, the
+    /// request is assumed to be a notification from the Client.
+    public var id: Identifier? {
+        switch self {
+        case .request(id: let i, method: _, params: _):
+            return i
+        case .notification(method: _, params: _):
+            return .none
+        }
+    }
 
-    private let params: JSON
+    private var params: JSON {
+        switch self {
+        case .notification(method: _, params: let json):
+            return json
+        case .request(id: _, method: _, params: let json):
+            return json
+        }
+    }
 
     public init(_ data: Data) throws {
-        let (_, body) = seperateHeaderFromBody(data)
-
-        guard let serialized = try? JSONSerialization.jsonObject(with: body, options: []) else {
+        guard let serialized = try? JSONSerialization.jsonObject(with: data, options: []) else {
             throw PredefinedError.parse
         }
 
@@ -59,9 +88,9 @@ public struct Request {
 
         switch (dMethod, dId, dParams) {
         case (.success(let m), .success(let i), .success(let j)):
-            method = m
-            id = i
-            params = j
+            self = .request(id: i, method: m, params: j)
+        case (.success(let m), _, .success(let j)):
+            self = .notification(method: m, params: j)
         default:
             throw PredefinedError.invalidRequest
         }
@@ -107,8 +136,6 @@ extension Request.Identifier : Equatable {
         case (.string(let lhss), .string(let rhss)) where lhss == rhss:
             return true
         case (.number(let lhsn), .number(let rhsn)) where lhsn == rhsn:
-            return true
-        case (.null, .null):
             return true
         default:
             return false

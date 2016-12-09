@@ -23,13 +23,13 @@ private struct ArrayParams : Decodable {
 
 }
 
-fileprivate let invalid = loadFixture("invalid-json.txt", in: "JSON-RPC/Requests")
-fileprivate let invalidRequest = loadFixture("invalid-request.txt", in: "JSON-RPC/Requests")
-fileprivate let invalidHeader = loadFixture("invalid-header.txt", in: "JSON-RPC/Requests")
-fileprivate let shutdown = loadFixture("shutdown.txt", in: "JSON-RPC/Requests")
-fileprivate let valid = loadFixture("valid.txt", in: "JSON-RPC/Requests")
-fileprivate let valid2 = loadFixture("valid-2.txt", in: "JSON-RPC/Requests")
-fileprivate let validWithoutHeader = loadFixture("valid-without-header.txt", in: "JSON-RPC/Requests")
+fileprivate let invalid = loadFixture("invalid-json.txt", in: "JSON-RPC/JSON")
+fileprivate let invalidRequest = loadFixture("invalid-request.txt", in: "JSON-RPC/JSON")
+fileprivate let invalidHeader = loadFixture("invalid-header.txt", in: "JSON-RPC/JSON")
+fileprivate let shutdown = loadFixture("shutdown.txt", in: "JSON-RPC/JSON")
+fileprivate let valid = loadFixture("valid.txt", in: "JSON-RPC/JSON")
+fileprivate let valid2 = loadFixture("valid-2.txt", in: "JSON-RPC/JSON")
+fileprivate let validWithoutHeader = loadFixture("valid-without-header.txt", in: "JSON-RPC/JSON")
 
 class RequestTests: XCTestCase {
 

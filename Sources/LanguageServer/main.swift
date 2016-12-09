@@ -25,15 +25,14 @@ dataAvailable = NotificationCenter.default.addObserver(forName: .NSFileHandleDat
         let request = try Request(buffer)
         let response = handle(request)
         /// If the request id is null then it is a notification and not a request
-        if case Request.Identifier.null = request.id {
-        } else {
+        switch request {
+        case .request(_, _, _):
             let toSend = response.data(header)
             FileHandle.standardOutput.write(toSend)
+        default: ()
         }
     } catch let error as PredefinedError {
-        let response = Response(is: error)
-        let toSend = response.data(header)
-        FileHandle.standardOutput.write(toSend)
+        fatalError(error.description)
     } catch {
         fatalError("TODO: Better error handeling. \(error)")
     }

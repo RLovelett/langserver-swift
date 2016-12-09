@@ -1,3 +1,0 @@
-Content-Length: 62
-
-{"jsonrpc": "2.0", "method": "subtract", "params": 3, "id": 1}
