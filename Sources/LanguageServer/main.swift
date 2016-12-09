@@ -1,6 +1,7 @@
 import Dispatch
 import Foundation
 import JSONRPC
+import LanguageServerProtocol
 
 private let header: [String : String] = [
     "Content-Type": "application/vscode-jsonrpc; charset=utf8"
@@ -19,22 +20,26 @@ dataAvailable = NotificationCenter.default.addObserver(forName: .NSFileHandleDat
         return stdin.waitForDataInBackgroundAndNotify()
     }
 
-    let str = String(data: buffer, encoding: .utf8) ?? "Expected UTF-8 encoding."
+    let requests = AnySequence<Data>() { RequestIterator(buffer) }
 
-    do {
-        let request = try Request(buffer)
-        let response = handle(request)
-        /// If the request id is null then it is a notification and not a request
-        switch request {
-        case .request(_, _, _):
-            let toSend = response.data(header)
-            FileHandle.standardOutput.write(toSend)
-        default: ()
+    for requestBuffer in requests {
+        let str = String(data: buffer, encoding: .utf8) ?? "Expected UTF-8 encoding."
+
+        do {
+            let request = try Request(requestBuffer)
+            let response = handle(request)
+            /// If the request id is null then it is a notification and not a request
+            switch request {
+            case .request(_, _, _):
+                let toSend = response.data(header)
+                FileHandle.standardOutput.write(toSend)
+            default: ()
+            }
+        } catch let error as PredefinedError {
+            fatalError(error.description)
+        } catch {
+            fatalError("TODO: Better error handeling. \(error)")
         }
-    } catch let error as PredefinedError {
-        fatalError(error.description)
-    } catch {
-        fatalError("TODO: Better error handeling. \(error)")
     }
 
     return stdin.waitForDataInBackgroundAndNotify()

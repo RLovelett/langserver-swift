@@ -1,0 +1,5 @@
+Content-Length: 271
+
+{"jsonrpc":"2.0","method":"textDocument/didChange","params":{"textDocument":{"uri":"file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift","version":7},"contentChanges":[{"text":"let x = Bar(x: 1, y: \"Ryan\")\nlet \nprint(x.y)\n"}]}}Content-Length: 222
+
+{"jsonrpc":"2.0","id":2,"method":"textDocument/completion","params":{"textDocument":{"uri":"file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift"},"position":{"line":1,"character":4}}}

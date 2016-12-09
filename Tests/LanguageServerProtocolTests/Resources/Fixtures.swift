@@ -36,9 +36,13 @@ func getFixture(_ named: String, in subdirectory: String) -> URL? {
         .appendingPathComponent(named, isDirectory: false)
 }
 
+func loadFixture(_ named: String, in subdirectory: String) -> Data? {
+    return getFixture(named, in: subdirectory).flatMap(loadData)
+}
+
 func loadJSONFromFixture(_ named: String, in subdirectory: String = "JSON") -> JSON {
-    return getFixture(named, in: subdirectory)
-        .flatMap(loadData)
+    return loadFixture(named, in: subdirectory)
         .flatMap(serializeJSON)
         .map({ JSON($0) }) ?? .null
 }
+
