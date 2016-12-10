@@ -13,16 +13,10 @@ class RequestIteratorTests: XCTestCase {
 
     func testIteratingMultipleRequestsAndHeaders() {
         let d = loadFixture("multiple-requests-and-headers.txt", in: "JSON-RPC/Requests")!
-        var it = RequestIterator(d)
+        let c = Array(AnySequence { RequestIterator(d) })
 
-        let first = it.next()
-        XCTAssertEqual(first?.count, 271)
-
-        let second = it.next()
-        XCTAssertEqual(second?.count, 222)
-
-        // 🏁
-        XCTAssertNil(it.next())
+        XCTAssertEqual(c.count, 4)
+        XCTAssertEqual(c.map({ $0.count }), [270, 62, 271, 222])
     }
 
     func testIteratingFullAndPartialRequestsWithoutCrash() {

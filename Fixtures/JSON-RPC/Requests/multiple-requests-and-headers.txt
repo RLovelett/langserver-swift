@@ -1,4 +1,8 @@
-Content-Length: 271
+Content-Length: 270
+
+{"jsonrpc":"2.0","method":"textDocument/didChange","params":{"textDocument":{"uri":"file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift","version":6},"contentChanges":[{"text":"let x = Bar(x: 1, y: \"Ryan\")\nlet\nprint(x.y)\n"}]}}Content-Length: 62
+
+{"jsonrpc":"2.0","method":"$/cancelRequest","params":{"id":1}}Content-Length: 271
 
 {"jsonrpc":"2.0","method":"textDocument/didChange","params":{"textDocument":{"uri":"file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift","version":7},"contentChanges":[{"text":"let x = Bar(x: 1, y: \"Ryan\")\nlet \nprint(x.y)\n"}]}}Content-Length: 222
 
