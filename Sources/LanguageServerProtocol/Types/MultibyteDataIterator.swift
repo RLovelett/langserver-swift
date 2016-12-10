@@ -34,7 +34,10 @@ extension MultibyteDataIterator : IteratorProtocol {
         let separatorRange = data.range(of: separator, options: [], in: index..<data.endIndex) ?? (data.endIndex..<data.endIndex)
         let extractedData = data.subdata(in: index..<separatorRange.lowerBound)
         let distance = calculateNewIndex(extractedData) ?? 0
-        index = data.index(separatorRange.upperBound, offsetBy: distance)
+        guard let newIndex = data.index(separatorRange.upperBound, offsetBy: distance, limitedBy: data.endIndex) else {
+            return nil
+        }
+        index = newIndex
         return data.subdata(in: Range<Data.Index>(separatorRange.upperBound..<index))
     }
 

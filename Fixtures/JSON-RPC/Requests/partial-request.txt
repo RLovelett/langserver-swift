@@ -1,0 +1,4 @@
+Content-Length: 282
+
+{"jsonrpc":"2.0","method":"textDocument/didChange","params":{"textDocument":{"uri":"file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift","version":18},"contentChanges":[{"text":"let x = Bar(x: 1, y: \"Ryan\")\nlet y = Bar(x)\nprint(x.y)\n"}]}}Content-Length: 223
+

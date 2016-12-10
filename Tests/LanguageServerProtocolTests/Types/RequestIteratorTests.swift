@@ -25,4 +25,17 @@ class RequestIteratorTests: XCTestCase {
         XCTAssertNil(it.next())
     }
 
+    func testIteratingFullAndPartialRequestsWithoutCrash() {
+        let d = loadFixture("partial-request.txt", in: "JSON-RPC/Requests")!
+        var it = RequestIterator(d)
+
+        let first = it.next()
+        XCTAssertEqual(first?.count, 282)
+
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+    }
+
 }
