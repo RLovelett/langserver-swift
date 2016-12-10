@@ -12,7 +12,12 @@ import Foundation
 extension URL : TextDocumentIdentifier {
 
     init(_ identifier: TextDocumentIdentifier, relativeTo root: URL? = .none) {
-        self = URL(fileURLWithPath: identifier.uri, isDirectory: false, relativeTo: root)
+        // Bar is here to handle a URI prefixed with a `file://` scheme
+        // e.g., file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift
+        // and
+        // /Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift
+        let bar = URLComponents(string: identifier.uri)?.path ?? identifier.uri
+        self = URL(fileURLWithPath: bar, isDirectory: false, relativeTo: root)
     }
 
     public var uri: String {

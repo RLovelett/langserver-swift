@@ -72,8 +72,8 @@ extension TextDocument : Decodable {
         self.languageId = languageId
         self.version = version
         self.text = text
-        self.file = URL(fileURLWithPath: uri, isDirectory: false)
         // TODO: Force cast 🤢
+        self.file = URL(string: uri)!
         self.lines = LineCollection(for: text)!
     }
 
