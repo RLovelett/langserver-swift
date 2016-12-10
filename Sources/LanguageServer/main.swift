@@ -9,6 +9,7 @@ private let header: [String : String] = [
 
 let main = OperationQueue.main
 let stdin = FileHandle.standardInput
+var iterator = RequestIterator(Data())
 stdin.waitForDataInBackgroundAndNotify()
 
 // When new data is available
@@ -20,7 +21,9 @@ dataAvailable = NotificationCenter.default.addObserver(forName: .NSFileHandleDat
         return stdin.waitForDataInBackgroundAndNotify()
     }
 
-    let requests = AnySequence<Data>() { RequestIterator(buffer) }
+    iterator.append(buffer)
+
+    let requests = AnySequence<Data>() { iterator }
 
     for requestBuffer in requests {
         let str = String(data: buffer, encoding: .utf8) ?? "Expected UTF-8 encoding."

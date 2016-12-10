@@ -38,4 +38,36 @@ class RequestIteratorTests: XCTestCase {
         XCTAssertNil(it.next())
     }
 
+    func testIteratingByAppendingBuffers() {
+        let d1 = loadFixture("partial-request-1.txt", in: "JSON-RPC/Requests")!
+        let d2 = loadFixture("partial-request-2.txt", in: "JSON-RPC/Requests")!
+        let d3 = loadFixture("partial-request-3.txt", in: "JSON-RPC/Requests")!
+
+        var it = RequestIterator(Data())
+        // Since no data was sent to start it should have nothing in it
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+
+        it.append(d1)
+        // Since d1 itself is partial it should have nothing to return
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+
+        it.append(d2)
+        XCTAssertEqual(it.next()?.count, 355)
+        XCTAssertEqual(it.next()?.count, 223)
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+
+        it.append(d3)
+        XCTAssertEqual(it.next()?.count, 358)
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+        XCTAssertNil(it.next())
+    }
+
 }

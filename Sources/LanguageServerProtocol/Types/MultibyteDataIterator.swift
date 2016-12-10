@@ -12,17 +12,18 @@ struct MultibyteDataIterator {
 
     let separator: Data
 
-    let data: Data
-
-    var index: Data.Index
+    var data: Data
 
     fileprivate let calculateNewIndex: (Data) -> Data.Index?
 
     init(split: Data, onSeparator: Data, calculateIndex: @escaping (Data) -> Data.Index?) {
         separator = onSeparator
         data = split
-        index = split.startIndex
         calculateNewIndex = calculateIndex
+    }
+
+    mutating func append(_ data: Data) {
+        self.data.append(data)
     }
 
 }
@@ -30,14 +31,14 @@ struct MultibyteDataIterator {
 extension MultibyteDataIterator : IteratorProtocol {
 
     mutating func next() -> Data? {
-        guard index < data.endIndex else { return nil }
-        let separatorRange = data.range(of: separator, options: [], in: index..<data.endIndex) ?? (data.endIndex..<data.endIndex)
-        let extractedData = data.subdata(in: index..<separatorRange.lowerBound)
+        guard !data.isEmpty else { return nil }
+        let separatorRange = data.range(of: separator) ?? (data.endIndex..<data.endIndex)
+        let extractedData = data.subdata(in: data.startIndex..<separatorRange.lowerBound)
         let distance = calculateNewIndex(extractedData) ?? 0
-        guard let newIndex = data.index(separatorRange.upperBound, offsetBy: distance, limitedBy: data.endIndex) else {
+        guard let index = data.index(separatorRange.upperBound, offsetBy: distance, limitedBy: data.endIndex) else {
             return nil
         }
-        index = newIndex
+        defer { data.removeSubrange(Range<Data.Index>(data.startIndex..<index)) }
         return data.subdata(in: Range<Data.Index>(separatorRange.upperBound..<index))
     }
 
