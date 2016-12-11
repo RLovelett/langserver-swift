@@ -32,7 +32,8 @@ public enum CompletionItemKind : Int {
 
     init(_ str: String) {
         switch str {
-        case "source.lang.swift.decl.function.free":
+        case "source.lang.swift.decl.function.free",
+             "source.lang.swift.decl.function.method.instance":
             self = .Function
         case "source.lang.swift.decl.function.constructor":
             self = .Constructor
