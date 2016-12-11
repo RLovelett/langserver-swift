@@ -117,7 +117,8 @@ extension CompletionItem : Encodable {
 extension CompletionItem : Decodable {
 
     fileprivate init(description: String, k: CompletionItemKind?, sourcetext: String, type: String?, brief: String?, context: String, bytesToErase: Int, associatedUSRs: String?, name: String, module: String?, notRecommended: Bool?) {
-        label = name
+        label = description
+        detail = description
         kind = k
         documentation = brief
         sortText = nil
@@ -128,18 +129,30 @@ extension CompletionItem : Decodable {
         command = nil
         data = nil
 
-        switch (module, type) {
-        case (.some(let m), .some(let t)):
-            let base = "\(m).\(t)"
-            if let uKind = k, case CompletionItemKind.Constructor = uKind {
-                detail = "\(base) \(description)"
-            } else {
-                detail = base
-            }
-        case (_, .some(let t)) where !t.isEmpty:
-            detail = "\(t)"
+        let base = type?.prepend(module, separator: ".")
+        switch k! {
+//        case .Text:
+//        case .Method:
+        case .Function:
+            detail = base?.prepend(description, separator: " -> ")
+        case .Constructor:
+            detail = description.prepend(base, separator: " ")
+//        case .Field:
+//        case .Variable:
+//        case .Class:
+//        case .Interface:
+//        case .Module:
+//        case .Property:
+//        case .Unit:
+//        case .Value:
+//        case .Enum:
+//        case .Keyword:
+//        case .Snippet:
+//        case .Color:
+//        case .File:
+//        case .Reference:
         default:
-            detail = nil
+            detail = description
         }
     }
 
