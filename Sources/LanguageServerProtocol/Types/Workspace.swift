@@ -71,7 +71,7 @@ extension Workspace {
 
         return ServerCapabilities(
             textDocumentSync: TextDocumentSyncKind.Full,
-            hoverProvider: false,
+            hoverProvider: true,
             completionProvider: completion,
             definitiionProvider: true,
             referencesProvider: false,
@@ -108,6 +108,20 @@ extension Workspace {
         let range = try getSource(c.uri).lines.selection(for: c)
         let location = Location(uri: c.uri.absoluteString, range: range)
         return location
+    }
+
+    public func cursor(forText at: TextDocumentPositionParams) throws -> Hover {
+        let url = URL(at.textDocument, relativeTo: root)
+        let source = try getSource(url)
+        let offset = try Int64(source.lines.byteOffset(at: at.position))
+
+        guard let c: Cursor = Request.cursorInfo(file: at.textDocument.uri, offset: offset, arguments: arguments).decode().value else {
+            throw WorkspaceError.sourceKit
+        }
+
+        let range = try getSource(c.uri).lines.selection(for: c)
+        let contents = [c.annotatedDeclaration, c.fullyAnnotatedDeclaration, c.documentationAsXML].flatMap({ $0 })
+        return Hover(contents: contents, range: range)
     }
 
 }

@@ -46,8 +46,11 @@ func handle(_ request: Request) -> Response {
             let location = try workspace.findDeclaration(forText: parameters)
             let response = Response(to: request, is: location)
             return response
-//        case "textDocument/hover":
-//            fatalError("\(request.method) is not implemented yet.")
+        case "textDocument/hover":
+            let parameters: TextDocumentPositionParams = try request.parse()
+            let hover = try workspace.cursor(forText: parameters)
+            let response = Response(to: request, is: hover)
+            return response
 //        case "textDocument/documentSymbol":
 //            fatalError("\(request.method) is not implemented yet.")
 //        case "textDocument/references":
