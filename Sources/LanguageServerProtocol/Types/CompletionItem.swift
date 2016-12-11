@@ -122,7 +122,7 @@ extension CompletionItem : Decodable {
         documentation = brief
         sortText = nil
         filterText = nil
-        insertText = nil
+        insertText = sourcetext
         textEdit = nil
         additionalTextEdits = nil
         command = nil
@@ -177,7 +177,7 @@ extension CompletionItem : Decodable {
     public static func decode(_ json: JSON) -> Decoded<CompletionItem> {
         let description: Decoded<String> = json <| "key.description"
         let kind: Decoded<CompletionItemKind?> = json <|? "key.kind"
-        let sourcetext: Decoded<String> = json <| "key.sourcetext"
+        let sourcetext: Decoded<String> = (json <| "key.sourcetext").flatMap(convert)
         let type: Decoded<String?> = json <|? "key.typename"
         let brief: Decoded<String?> = json <|? "key.doc.brief"
         let context: Decoded<String> = json <| "key.context"
