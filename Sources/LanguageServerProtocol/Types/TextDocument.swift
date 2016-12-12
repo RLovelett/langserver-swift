@@ -10,7 +10,6 @@ import Argo
 import Curry
 import Foundation
 import Runes
-import SourceKittenFramework
 
 /// The representation of a Swift source file.
 ///

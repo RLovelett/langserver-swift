@@ -9,7 +9,7 @@
 import Argo
 import Foundation
 import os.log
-import SourceKittenFramework
+import SourceKitter
 import YamlConvertable
 import Yams
 
@@ -24,6 +24,8 @@ public struct Workspace {
 
     /// All the Swift source documents on the filesystem in the `Workspace`.
     fileprivate var modules: Set<SwiftModule> = []
+
+    private let sourceKitSession: SourceKit.Session
 
     /// Attempt to create a `Workspace` from parameters provided via the language server protocol.
     ///
@@ -42,6 +44,7 @@ public struct Workspace {
     ///
     /// - Parameter inDirectory: A fully qulified on the filesystem to the `Workspace`.
     init(inDirectory: URL) {
+        sourceKitSession = SourceKit.Session()
         root = inDirectory
         let llbuild = root.appendingPathComponent(".build", isDirectory: true)
             .appendingPathComponent("debug", isDirectory: false)
@@ -174,9 +177,10 @@ public struct Workspace {
         // SourceKit may send back JSON that is an empty object. This is _not_ an error condition.
         // So we have to seperate SourceKit throwing an error from SourceKit sending back a
         // "malformed" Cursor structure.
-        let json: Any = try Request.cursorInfo(file: url.path, offset: offset, arguments: module.arguments).sendAndReceiveJSON()
-
-        return Cursor.decode(JSON(json)).value
+        let result = SourceKit.CursorInfo(source: source.text, source: at.textDocument.uri, offset: offset, args: module.arguments)
+            .request()
+            .flatMap(Cursor.decode)
+        return result.value
     }
 
     /// Find the definition of a symbol in the `Workspace` and provide the `Location` of same definition.
@@ -238,12 +242,11 @@ public struct Workspace {
             os_log("Line %d, character %d, byte %d", log: log, type: .default, at.position.line, at.position.character, offset)
             os_log("%{public}@", log: log, type: .default, module.arguments.joined(separator: ", "))
         }
-        let request = Request.codeCompletionRequest(
-            file: url.path,
-            contents: source.text,
-            offset: offset,
-            arguments: module.arguments)
-        return request.decode().value ?? []
+        let result = SourceKit.CodeComplete(source: source.text, source: url, offset: offset, args: module.arguments)
+            .request()
+            .flatMap({ decodedJSON($0, forKey: "key.results") })
+            .flatMap({ [CompletionItem].decode($0) })
+        return result.value ?? []
     }
 
 }

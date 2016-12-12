@@ -8,18 +8,6 @@
       "version": "4.1.2"
     },
     {
-      "package": "Clang_C",
-      "reason": null,
-      "repositoryURL": "https://github.com/norio-nomura/Clang_C.git",
-      "version": "1.0.2"
-    },
-    {
-      "package": "Commandant",
-      "reason": null,
-      "repositoryURL": "https://github.com/Carthage/Commandant.git",
-      "version": "0.11.3"
-    },
-    {
       "package": "Curry",
       "reason": null,
       "repositoryURL": "https://github.com/thoughtbot/Curry.git",
@@ -32,34 +20,16 @@
       "version": "4.1.1"
     },
     {
-      "package": "Result",
-      "reason": null,
-      "repositoryURL": "https://github.com/antitypical/Result.git",
-      "version": "3.1.0"
-    },
-    {
       "package": "Runes",
       "reason": null,
       "repositoryURL": "https://github.com/thoughtbot/Runes.git",
       "version": "4.0.1"
     },
     {
-      "package": "SWXMLHash",
-      "reason": null,
-      "repositoryURL": "https://github.com/drmohundro/SWXMLHash.git",
-      "version": "3.0.3"
-    },
-    {
       "package": "SourceKit",
       "reason": null,
-      "repositoryURL": "https://github.com/norio-nomura/SourceKit.git",
-      "version": "1.0.1"
-    },
-    {
-      "package": "SourceKitten",
-      "reason": null,
-      "repositoryURL": "https://github.com/RLovelett/SourceKitten.git",
-      "version": "0.18.0-beta.1"
+      "repositoryURL": "https://github.com/RLovelett/SourceKit.git",
+      "version": "1.0.2"
     },
     {
       "package": "Yams",
