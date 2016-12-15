@@ -26,12 +26,6 @@
       "version": "3.0.0"
     },
     {
-      "package": "Regex",
-      "reason": null,
-      "repositoryURL": "https://github.com/crossroadlabs/Regex.git",
-      "version": "1.0.0-alpha.1"
-    },
-    {
       "package": "Result",
       "reason": null,
       "repositoryURL": "https://github.com/antitypical/Result.git",

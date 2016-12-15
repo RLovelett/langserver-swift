@@ -11,7 +11,6 @@ let package = Package(
     dependencies: [
         .Package(url: "https://github.com/RLovelett/SourceKitten.git", majorVersion: 0),
         .Package(url: "https://github.com/RLovelett/Argo.git", majorVersion: 4),
-        .Package(url: "https://github.com/thoughtbot/Curry.git", majorVersion: 3),
-        .Package(url: "https://github.com/crossroadlabs/Regex.git", Version("1.0.0-alpha.1"))
+        .Package(url: "https://github.com/thoughtbot/Curry.git", majorVersion: 3)
     ]
 )

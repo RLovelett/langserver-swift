@@ -12,6 +12,7 @@ import XCTest
 class ConvertTests: XCTestCase {
 
     func testExample() {
+        XCTAssertEqual(convert("<#Ryan>").value, "<#Ryan>")
         XCTAssertEqual(convert("fatalError(<#T##message: String##String#>)").value, "fatalError({{1:message: String}})")
         XCTAssertEqual(convert("x: <#T##Int#>, y: <#T##String#>)").value, "x: {{1:Int}}, y: {{2:String}})")
         XCTAssertEqual(convert("debugPrint(<#T##items: Any...##Any#>, to: &<#T##Target#>)").value, "debugPrint({{1:items: Any...}}, to: &{{2:Target}})")

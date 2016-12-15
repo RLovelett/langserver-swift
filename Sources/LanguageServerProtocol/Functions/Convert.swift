@@ -8,9 +8,8 @@
 
 import Argo
 import Foundation
-import Regex
 
-fileprivate let pattern = try! Regex(pattern: "<#T##([^#]+)#(?:#[^#]+#)?>", groupNames: "type")
+fileprivate let regex = try! NSRegularExpression(pattern: "<#T##([^#]+)#(?:#[^#]+#)?>", options: [])
 
 /// Convert a SourceKit (read: Xcode) style snippet to a
 /// [TextMate snippet syntax](https://manual.macromates.com/en/snippets).
@@ -27,10 +26,22 @@ fileprivate let pattern = try! Regex(pattern: "<#T##([^#]+)#(?:#[^#]+#)?>", grou
 /// - Returns: A `String` where any SourceKit style snippets have been converted to TextMate
 /// snippets.
 func convert(_ sourceKit: String) -> Decoded<String> {
+    var result = ""
+    var lastRange = sourceKit.startIndex..<sourceKit.startIndex
     var cursorIndex = 0
-    return pure(pattern.replaceAll(in: sourceKit) { match in
-        guard let group = match.group(at: 1) else { return nil }
+    regex.enumerateMatches(in: sourceKit, options: [], range: sourceKit.nsrange) { (x: NSTextCheckingResult?, _, _) -> Void in
+        guard
+            let matchRange = (x?.rangeAt(0)).flatMap({ sourceKit.range(from: $0) }),
+            let group = (x?.rangeAt(1)).flatMap({ sourceKit.substring(with: $0) })
+        else {
+            return
+        }
         cursorIndex += 1
-        return "{{\(cursorIndex):\(group)}}"
-    })
+        let leading = lastRange.upperBound..<matchRange.lowerBound
+        result += sourceKit.substring(with: leading)
+        result += "{{\(cursorIndex):\(group)}}"
+        lastRange = matchRange
+    }
+    result += sourceKit.substring(from: lastRange.upperBound)
+    return pure(result)
 }
