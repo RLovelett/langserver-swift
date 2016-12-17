@@ -26,6 +26,12 @@
       "version": "3.0.0"
     },
     {
+      "package": "Ogra",
+      "reason": null,
+      "repositoryURL": "https://github.com/RLovelett/Ogra.git",
+      "version": "4.1.1-beta.1"
+    },
+    {
       "package": "Result",
       "reason": null,
       "repositoryURL": "https://github.com/antitypical/Result.git",
