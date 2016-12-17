@@ -1,0 +1,31 @@
+client:
+  name: swift-build
+tools: {}
+targets:
+  "test": ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/bar.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/main.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.swiftmodule","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple"]
+  "main": ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/bar.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/main.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.swiftmodule","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple"]
+default: "main"
+commands: 
+  "<Simple.module>":
+    tool: swift-compiler
+    executable: "/Users/ryan/Library/Developer/Toolchains/swift-DEVELOPMENT-SNAPSHOT-2016-12-13-a.xctoolchain/usr/bin/swiftc"
+    module-name: "Simple"
+    module-output-path: "/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.swiftmodule"
+    inputs: ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/bar.swift","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift"]
+    outputs: ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/bar.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/main.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.swiftmodule"]
+    import-paths: ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug"]
+    temps-path: "/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build"
+    objects: ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/bar.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/main.swift.o"]
+    other-args: ["-j8","-D","SWIFT_PACKAGE","-Onone","-g","-enable-testing","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-target","x86_64-apple-macosx10.10","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk","-module-cache-path","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/ModuleCache"]
+    sources: ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/bar.swift","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift"]
+    is-library: false
+    enable-whole-module-optimization: false
+    num-threads: "8"
+
+  "<Simple.exe>":
+    tool: shell
+    description: "Linking ./.build/debug/Simple"
+    inputs: ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/bar.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/main.swift.o"]
+    outputs: ["/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple"]
+    args: ["/Users/ryan/Library/Developer/Toolchains/swift-DEVELOPMENT-SNAPSHOT-2016-12-13-a.xctoolchain/usr/bin/swiftc","-target","x86_64-apple-macosx10.10","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk","-g","-L/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug","-o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-emit-executable","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/bar.swift.o","/Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/debug/Simple.build/main.swift.o"]
+
