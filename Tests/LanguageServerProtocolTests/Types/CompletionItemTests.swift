@@ -43,7 +43,7 @@ class CompletionItemTests: XCTestCase {
         case .success(let item):
             XCTAssertEqual(item.kind, CompletionItemKind.Keyword)
             XCTAssertEqual(item.label, "import")
-            XCTAssertNil(item.detail)
+            XCTAssertEqual(item.detail, "import")
             XCTAssertNil(item.documentation)
         case .failure(let e):
             XCTFail(e.description)
@@ -57,7 +57,7 @@ class CompletionItemTests: XCTestCase {
         case .success(let item):
             XCTAssertEqual(item.kind, CompletionItemKind.Interface)
             XCTAssertEqual(item.label, "Integer")
-            XCTAssertEqual(item.detail, "Swift.Integer")
+            XCTAssertEqual(item.detail, "Integer")
             XCTAssertEqual(item.documentation, "A set of common requirements for Swift’s integer types.")
         case .failure(let e):
             XCTFail(e.description)
@@ -70,7 +70,7 @@ class CompletionItemTests: XCTestCase {
         switch foo {
         case .success(let item):
             XCTAssertEqual(item.kind, CompletionItemKind.Constructor)
-            XCTAssertEqual(item.label, "x:y:)")
+            XCTAssertEqual(item.label, "(x: Int, y: String)")
             XCTAssertEqual(item.detail, "Test.Bar (x: Int, y: String)")
             XCTAssertNil(item.documentation)
         case .failure(let e):
