@@ -10,24 +10,6 @@ import Argo
 import Foundation
 import SourceKittenFramework
 
-fileprivate let isFile: (URL) -> Bool = {
-    guard let resourceMap = try? $0.resourceValues(forKeys: [.isDirectoryKey]), let isDirectory = resourceMap.isDirectory else {
-        return false
-    }
-    return !isDirectory
-}
-
-fileprivate let isSwiftSource: (URL) -> Bool = {
-    return $0.pathExtension.lowercased() == "swift"
-}
-
-fileprivate let extractSource: (URL) -> (key: URL, value: TextDocument)? = {
-    guard let src = TextDocument($0) else {
-        return nil
-    }
-    return (key: $0, value: src)
-}
-
 public struct Workspace {
 
     let root: URL
@@ -44,9 +26,10 @@ public struct Workspace {
     init(inDirectory: URL) {
         root = inDirectory
         let s = WorkspaceSequence(root: root).lazy
-            .filter(isFile)
-            .filter(isSwiftSource)
-            .flatMap(extractSource)
+            .filter({ $0.isFileURL && $0.isFile })
+            .filter({ $0.pathExtension.lowercased() == "swift" }) // Check if file is a Swift source file (e.g., has `.swift` extension)
+            .flatMap(TextDocument.init)
+            .map({ (key: $0.file, value: $0) })
         let i = Dictionary(s)
         index = i
     }

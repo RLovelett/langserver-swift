@@ -9,6 +9,18 @@
 import Argo
 import Foundation
 
+extension URL {
+
+    /// Returns `true` if the URL is not a directory on the filesystem.
+    var isFile: Bool {
+        guard let resourceMap = try? self.resourceValues(forKeys: [.isDirectoryKey]), let isDirectory = resourceMap.isDirectory else {
+            return false
+        }
+        return !isDirectory
+    }
+
+}
+
 extension URL : TextDocumentIdentifier {
 
     init(_ identifier: TextDocumentIdentifier, relativeTo root: URL? = .none) {
