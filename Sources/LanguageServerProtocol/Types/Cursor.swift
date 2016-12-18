@@ -13,6 +13,11 @@ import Runes
 
 struct Cursor {
 
+    enum DefinitionLocation {
+        case local(filepath: URL, offset: UInt64, length: UInt64)
+        case system(moduleName: String, groupName: String, isSystem: Bool)
+    }
+
     /// UID for the declaration or reference kind (function, class, etc.).
     let kind: String
 
@@ -22,16 +27,7 @@ struct Cursor {
     /// USR string for the token.
     let usr: String
 
-    /// Path to the file.
-    let filepath: String
-
-    /// Byte offset of the token inside the souce contents.
-    let offset: UInt64
-
-    /// Length of the token.
-    let length: UInt64
-
-    // Text describing the type of the result.
+    /// Text describing the type of the result.
     let typename: String
 
     /// XML representing how the token was declared.
@@ -46,39 +42,46 @@ struct Cursor {
     /// USR string for the type.
     let typeusr: String
 
-    var uri: URL {
-        return URL(fileURLWithPath: filepath)
-    }
+    let defined: DefinitionLocation
 
 }
 
 extension Cursor : Decodable {
 
     static func decode(_ json: JSON) -> Decoded<Cursor> {
-        let k: Decoded<String> = json <| "key.kind"
-        let n: Decoded<String> = json <| "key.name"
-        let u: Decoded<String> = json <| "key.usr"
-        let f: Decoded<String> = json <| "key.filepath"
-        let o: Decoded<UInt64> = json <| "key.offset"
-        let l: Decoded<UInt64> = json <| "key.length"
-        let t: Decoded<String> = json <| "key.typename"
-        let a: Decoded<String> = json <| "key.annotated_decl"
-        let fa: Decoded<String> = json <| "key.fully_annotated_decl"
-        let df: Decoded<String?> = json <|? "key.doc.full_as_xml"
-        let tu: Decoded<String> = json <| "key.typeusr"
-
         return curry(Cursor.init)
-            <^> k
-            <*> n
-            <*> u
-            <*> f
-            <*> o
-            <*> l
-            <*> t
-            <*> a
-            <*> fa
-            <*> df
-            <*> tu
+            <^> json <| "key.kind"
+            <*> json <| "key.name"
+            <*> json <| "key.usr"
+            <*> json <| "key.typename"
+            <*> json <| "key.annotated_decl"
+            <*> json <| "key.fully_annotated_decl"
+            <*> json <|? "key.doc.full_as_xml"
+            <*> json <| "key.typeusr"
+            <*> Cursor.DefinitionLocation.decode(json)
     }
 
 }
+
+extension Cursor.DefinitionLocation : Decodable {
+
+    static func decode(_ json: JSON) -> Decoded<Cursor.DefinitionLocation> {
+        let filepath: String? = (json <| "key.filepath").value
+        let offset: UInt64? = (json <| "key.offset").value
+        let length: UInt64? = (json <| "key.length").value
+        let isSystem: Bool = (json <| "key.is_system").value ?? false
+        let moduleName: String? = (json <| "key.modulename").value
+        let groupName: String? = (json <| "key.groupname").value
+
+        switch (filepath, offset, length, moduleName, groupName) {
+        case let (f?, o?, l?, _, _):
+            return pure(Cursor.DefinitionLocation.local(filepath: URL(fileURLWithPath: f), offset: o, length: l))
+        case let (_, _, _, mn?, gn?):
+            return pure(Cursor.DefinitionLocation.system(moduleName: mn, groupName: gn, isSystem: isSystem))
+        default:
+            return .customError("Could not determine if this is a system or local module.")
+        }
+    }
+
+}
+

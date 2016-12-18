@@ -96,32 +96,50 @@ extension Workspace {
         return source
     }
 
-    public func findDeclaration(forText at: TextDocumentPositionParams) throws -> Location {
+    private func getCursor(forText at: TextDocumentPositionParams) throws -> Cursor? {
         let url = URL(at.textDocument, relativeTo: root)
         let source = try getSource(url)
         let offset = try Int64(source.lines.byteOffset(at: at.position))
 
-        guard let c: Cursor = Request.cursorInfo(file: at.textDocument.uri, offset: offset, arguments: arguments).decode().value else {
-            throw WorkspaceError.sourceKit
+        // SourceKit may send back JSON that is an empty object. This is _not_ an error condition.
+        // So we have to seperate SourceKit throwing an error from SourceKit sending back a
+        // "malformed" Cursor structure.
+        let json: Any = try Request.cursorInfo(file: at.textDocument.uri, offset: offset, arguments: arguments).failableSend()
+
+        return Cursor.decode(JSON(json)).value
+    }
+
+    public func findDeclaration(forText at: TextDocumentPositionParams) throws -> [Location] {
+        // If the JSON is "malformed" (e.g., empty object) just return an empty `Array`. No errors.
+        guard let c = try getCursor(forText: at) else {
+            return []
         }
 
-        let range = try getSource(c.uri).lines.selection(for: c)
-        let location = Location(uri: c.uri.absoluteString, range: range)
-        return location
+        switch c.defined {
+        case let .local(filepath, symbolOffset, symbolLength):
+            let range = try getSource(filepath).lines.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
+            let location = Location(uri: filepath.absoluteString, range: range)
+            return [location]
+        case .system(_):
+            return []
+        }
     }
 
     public func cursor(forText at: TextDocumentPositionParams) throws -> Hover {
-        let url = URL(at.textDocument, relativeTo: root)
-        let source = try getSource(url)
-        let offset = try Int64(source.lines.byteOffset(at: at.position))
-
-        guard let c: Cursor = Request.cursorInfo(file: at.textDocument.uri, offset: offset, arguments: arguments).decode().value else {
-            throw WorkspaceError.sourceKit
+        // If the JSON is "malformed" (e.g., empty object) just return an empty `String`. No errors.
+        guard let c = try getCursor(forText: at) else {
+            return Hover(contents: [""], range: .none)
         }
 
-        let range = try getSource(c.uri).lines.selection(for: c)
         let contents = [c.annotatedDeclaration, c.fullyAnnotatedDeclaration, c.documentationAsXML].flatMap({ $0 })
-        return Hover(contents: contents, range: range)
+
+        switch c.defined {
+        case let .local(filepath, symbolOffset, symbolLength):
+            let range = try getSource(filepath).lines.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
+            return Hover(contents: contents, range: range)
+        case .system(_):
+            return Hover(contents: contents, range: .none)
+        }
     }
 
 }

@@ -56,10 +56,9 @@ struct LineCollection {
         return position
     }
 
-    func selection(for c: Cursor) throws -> TextDocumentRange {
-        let startOffset = Int(c.offset)
-        let endOffset = Int(c.offset + c.length)
-        let start = try position(for: startOffset)
+    func selection(startAt offset: Int, length: Int) throws -> TextDocumentRange {
+        let endOffset = Int(offset + length)
+        let start = try position(for: offset)
         let end = try position(for: endOffset)
         return TextDocumentRange(start: start, end: end)
     }

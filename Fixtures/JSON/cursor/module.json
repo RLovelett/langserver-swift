@@ -1,0 +1,12 @@
+{
+  "key.filepath" : "\/Users\/ryan\/Source\/langserver-swift\/Fixtures\/ValidLayouts\/Simple\/Sources\/main.swift",
+  "key.annotated_decl" : "<Declaration>func dumpThem(_ all: Any...)<\/Declaration>",
+  "key.fully_annotated_decl" : "<decl.function.free><syntaxtype.keyword>func<\/syntaxtype.keyword> <decl.name>dumpThem<\/decl.name>(<decl.var.parameter><decl.var.parameter.argument_label>_<\/decl.var.parameter.argument_label> <decl.var.parameter.name>all<\/decl.var.parameter.name>: <decl.var.parameter.type>Any<\/decl.var.parameter.type>...<\/decl.var.parameter>)<\/decl.function.free>",
+  "key.typename" : "(Any...) -> ()",
+  "key.length" : 23,
+  "key.name" : "dumpThem(_:)",
+  "key.typeusr" : "_TtFtGSaP___T_",
+  "key.usr" : "s:F3bar8dumpThemFtGSaP___T_",
+  "key.kind" : "source.lang.swift.decl.function.free",
+  "key.offset" : 5
+}
