@@ -59,13 +59,13 @@
       "package": "SourceKitten",
       "reason": null,
       "repositoryURL": "https://github.com/RLovelett/SourceKitten.git",
-      "version": "0.15.1-beta6"
+      "version": "0.15.4-beta.1"
     },
     {
-      "package": "Yaml",
+      "package": "Yams",
       "reason": null,
-      "repositoryURL": "https://github.com/behrang/YamlSwift.git",
-      "version": "3.1.0"
+      "repositoryURL": "https://github.com/RLovelett/Yams.git",
+      "version": "0.1.5-beta.1"
     }
   ],
   "version": 1
