@@ -14,17 +14,17 @@ extension Request {
 
     func decode<T: Decodable>() -> Decoded<T> where T.DecodedType == T {
         do {
-            let json: Any = try self.failableSend()
+            let json = try self.sendAndReceiveJSON()
             return T.decode(JSON(json))
         } catch {
             return .customError(error.localizedDescription)
         }
     }
 
-    func decode<T: Decodable>() -> Decoded<[T]> where T.DecodedType == T {
+    func decode<T: Decodable>(key: String = "key.results") -> Decoded<[T]> where T.DecodedType == T {
         do {
-            let json: Any = try self.failableSend()
-            let result: Decoded<[T]> = JSON(json) <|| "key.results"
+            let json = try self.sendAndReceiveJSON()
+            let result: Decoded<[T]> = JSON(json) <|| key
             return result
         } catch {
             return .customError(error.localizedDescription)

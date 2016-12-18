@@ -1,0 +1,3 @@
+Content-Length: 194
+
+{"jsonrpc":"2.0","method":"workspace/didChangeWatchedFiles","params":{"changes":[{"uri":"file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/.build/release.yaml","type":1}]}}

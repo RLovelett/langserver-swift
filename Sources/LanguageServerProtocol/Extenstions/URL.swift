@@ -19,6 +19,14 @@ extension URL {
         return !isDirectory
     }
 
+    /// Test if a `URL` is a child node of a parent.
+    ///
+    /// - Parameter child: The URL to test.
+    /// - Returns: True if the argument is a child of this instance.
+    func isParent(of child: URL) -> Bool {
+        return child.path.hasPrefix(self.path)
+    }
+
 }
 
 extension URL : TextDocumentIdentifier {
