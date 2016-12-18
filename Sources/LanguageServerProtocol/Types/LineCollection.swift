@@ -13,10 +13,17 @@ fileprivate let lf: UInt8 = 0x0A
 fileprivate func buildLineRangeCollection(from data: Data) -> [Range<Data.Index>] {
     var array: [Range<Data.Index>] = []
     var lower: Data.Index = data.startIndex
+    var last: Range<Data.Index> = Range<Data.Index>(data.startIndex..<data.endIndex)
     for (upper, datum) in data.enumerated() where datum == lf {
-        array.append(Range<Data.Index>(lower...upper))
+        last = Range<Data.Index>(lower...upper)
+        array.append(last)
         // The next lowest is greater than the current index
         lower = (upper + 1)
+    }
+    // File does not have a trailing line-feed
+    if last.upperBound != data.endIndex {
+        let end = Range<Data.Index>(last.upperBound..<data.endIndex)
+        array.append(end)
     }
     return array
 }

@@ -67,4 +67,15 @@ class LineCollectionTests: XCTestCase {
         }
     }
 
+    func testSourceWithoutTrailingNewLine() {
+        let url = getFixture("main.swift", in: "ValidLayouts/Simple/Sources")!
+
+        do {
+            let lc = try LineCollection(for: url)
+            XCTAssertEqual(lc.lines.count, 2)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
 }
