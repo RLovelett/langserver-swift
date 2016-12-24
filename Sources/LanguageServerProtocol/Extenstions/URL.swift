@@ -23,28 +23,30 @@ extension URL {
 
 extension URL : TextDocumentIdentifier {
 
-    init(_ identifier: TextDocumentIdentifier, relativeTo root: URL? = .none) {
-        // Bar is here to handle a URI prefixed with a `file://` scheme
-        // e.g., file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift
-        // and
-        // /Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift
-        let bar = URLComponents(string: identifier.uri)?.path ?? identifier.uri
-        self = URL(fileURLWithPath: bar, isDirectory: false, relativeTo: root)
-    }
-
-    public var uri: String {
-        return self.path
+    public var uri: URL {
+        return self
     }
 
 }
 
 extension URL : Decodable {
 
+    /// Convert a `JSON.string` case into a `URL`.
+    ///
+    /// This decoder has intelligence about dealing with directories and `file://` scheme prefixed strings.
+    ///
+    /// - Parameter json: A `JSON.string` containing a valid `URL`.
+    /// - Returns: The decoded `URL`.
     public static func decode(_ json: JSON) -> Decoded<URL> {
         switch json {
         case .string(let uri):
-            return URL(string: uri).map(pure)
-                ?? .typeMismatch(expected: "rawValue for \(self)", actual: json)
+            let isDirectory = (uri as NSString).pathExtension.isEmpty
+            // Bar is here to handle a URI prefixed with a `file://` scheme
+            // e.g., file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift
+            // and
+            // /Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift
+            let bar = URLComponents(string: uri)?.path ?? uri
+            return pure(URL(fileURLWithPath: bar, isDirectory: isDirectory))
         default:
             return .typeMismatch(expected: "String", actual: json)
         }

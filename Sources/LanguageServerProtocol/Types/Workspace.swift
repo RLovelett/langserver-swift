@@ -41,7 +41,7 @@ public struct Workspace {
             .filter({ $0.isFileURL && $0.isFile })
             .filter({ $0.pathExtension.lowercased() == "swift" }) // Check if file is a Swift source file (e.g., has `.swift` extension)
             .flatMap(TextDocument.init)
-            .map({ (key: $0.file, value: $0) })
+            .map({ (key: $0.uri, value: $0) })
         let i = Dictionary(s)
         index = i
     }
@@ -52,7 +52,7 @@ public struct Workspace {
     }
 
     var arguments: [String] {
-        return index.values.map({ $0.file.path })
+        return index.values.map({ $0.uri.path })
     }
 
     /// A description to the client of the types of services this language server provides.
@@ -100,7 +100,7 @@ public struct Workspace {
     ///
     /// - Parameter document: Information about which `TextDocument` was opened by the client.
     public mutating func open(byClient document: DidOpenTextDocumentParams) {
-        let url = URL(document.textDocument, relativeTo: root)
+        let url = document.textDocument.uri
         index[url] = document.textDocument
     }
 
@@ -110,7 +110,7 @@ public struct Workspace {
     /// - Throws: `WorkspaceError.notFound` if it cannot find the `TextDocument` in the `Workspace` `index`.
     public mutating func update(byClient document: DidChangeTextDocumentParams) throws {
         guard let changes = document.contentChanges.first else { return }
-        let url = URL(document.textDocument, relativeTo: root)
+        let url = document.textDocument.uri
         let updated = try getSource(url).update(version: document.textDocument.version, andText: changes.text)
         index[url] = updated
     }
@@ -120,19 +120,19 @@ public struct Workspace {
     ///
     /// - Parameter document: Information about which `TextDocument` was closed by the client.
     public mutating func close(byClient document: DidCloseTextDocumentParams) {
-        let url = URL(document.textDocument, relativeTo: root)
+        let url = document.textDocument.uri
         index[url] = TextDocument(url)
     }
 
     private func getCursor(forText at: TextDocumentPositionParams) throws -> Cursor? {
-        let url = URL(at.textDocument, relativeTo: root)
+        let url = at.textDocument.uri
         let source = try getSource(url)
         let offset = try Int64(source.lines.byteOffset(at: at.position))
 
         // SourceKit may send back JSON that is an empty object. This is _not_ an error condition.
         // So we have to seperate SourceKit throwing an error from SourceKit sending back a
         // "malformed" Cursor structure.
-        let json: Any = try Request.cursorInfo(file: at.textDocument.uri, offset: offset, arguments: arguments).failableSend()
+        let json: Any = try Request.cursorInfo(file: at.textDocument.uri.path, offset: offset, arguments: arguments).failableSend()
 
         return Cursor.decode(JSON(json)).value
     }
@@ -186,11 +186,11 @@ public struct Workspace {
     /// - Returns: An `Array` of `CompletionItems` regarding information at the location.
     /// - Throws: `WorkspaceError` for any of a number of reasons. See: `WorkspaceError` for more information.
     public func complete(forText at: TextDocumentPositionParams) throws -> [CompletionItem] {
-        let url = URL(at.textDocument, relativeTo: root)
+        let url = at.textDocument.uri
         let source = try getSource(url)
         let offset = try Int64(source.lines.byteOffset(at: at.position))
         let request = Request.codeCompletionRequest(
-            file: at.textDocument.uri,
+            file: at.textDocument.uri.path,
             contents: source.text,
             offset: offset,
             arguments: arguments)

@@ -8,12 +8,13 @@
 
 import Argo
 import Curry
+import Foundation
 import Runes
 
 struct VersionedTextDocumentIdentifier : TextDocumentIdentifier {
 
     /// The text document's URI.
-    let uri: String
+    let uri: URL
 
     /// The version number of this document.
     let version: Int
@@ -23,7 +24,7 @@ struct VersionedTextDocumentIdentifier : TextDocumentIdentifier {
 extension VersionedTextDocumentIdentifier : Decodable {
 
     static func decode(_ json: JSON) -> Decoded<VersionedTextDocumentIdentifier> {
-        let uri: Decoded<String> = json <| "uri"
+        let uri: Decoded<URL> = json <| "uri"
         let version: Decoded<Int> = json <| "version"
         return curry(VersionedTextDocumentIdentifier.init) <^> uri <*> version
     }

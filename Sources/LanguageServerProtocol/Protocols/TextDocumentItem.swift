@@ -6,11 +6,13 @@
 //
 //
 
+import Foundation
+
 /// An item to transfer a text document from the client to the server.
-protocol TextDocumentItem {
+protocol TextDocumentItem : TextDocumentIdentifier {
 
     /// The text document's URI.
-    var uri: String { get }
+    var uri: URL { get }
 
     /// The text document's language identifier.
     var languageId: String { get }
