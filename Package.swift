@@ -14,3 +14,11 @@ let package = Package(
         .Package(url: "https://github.com/thoughtbot/Curry.git", majorVersion: 3)
     ]
 )
+
+products.append(
+    Product(
+        name: "langserver-swift",
+        type: .Executable,
+        modules: ["LanguageServer"]
+    )
+)
