@@ -7,9 +7,11 @@
 //
 
 import Argo
+import struct Build.Command
 import Curry
 import Foundation
 import Runes
+import class PackageModel.Module
 
 /// A module, typically defined and managed by [SwiftPM](), that manages the sources and the compiler arguments
 /// that should be sent to SourceKit.
@@ -50,12 +52,13 @@ struct SwiftModule {
     ///   - moduleName: The name of the Swift module.
     ///   - locations: An array of file paths on the local file system where the sources of the module are found.
     ///   - arguments: An array of arguments used to compile the module.
-    init(_ moduleName: String, locations: [URL], arguments: [String] = []) {
-        name = moduleName
-        sources = Dictionary(locations
+    init(module: Module, commands: [Build.Command]) {
+        name = module.name
+        sources = Dictionary(module.sources.paths
+            .map { URL(fileURLWithPath: $0.asString) }
             .flatMap(TextDocument.init)
             .map({ (key: $0.uri, value: $0) }))
-        otherArguments = arguments
+        otherArguments = commands.flatMap({ $0.tool.otherArguments })
     }
 
     var root: URL {

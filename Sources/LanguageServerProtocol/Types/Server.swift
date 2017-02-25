@@ -7,44 +7,56 @@
 //
 
 import Argo
+import struct Basic.AbsolutePath
+import func Build.example
 import Foundation
 import os.log
+import class PackageLoading.ManifestLoader
 import SourceKitter
+import struct Utility.BuildFlags
+import class Workspace.Workspace
 
 @available(macOS 10.12, *)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
 
 /// A directory on the local filesystem that contains all of the sources of the Swift project.
-public struct Workspace {
-
-    /// The fully qualified location of the `Workspace` on the filesystem.
-    let root: URL
+public class Server {
 
     /// All the Swift source documents on the filesystem in the `Workspace`.
     fileprivate var modules: Set<SwiftModule> = []
 
     private let sourceKitSession: SourceKit.Session
 
-    /// Attempt to create a `Workspace` from parameters provided via the language server protocol.
+    /// Initialize using parameters provided by the client.
     ///
     /// If the parameters do not provide a `rootPath` the `Workspace` cannot be initialized and
     /// this optional initializer fails.
     ///
     /// - Parameter parameters: The parameters sent to the server from the client.
-    public init?(_ parameters: InitializeParams) {
-        guard let rootPath = parameters.rootPath else {
+    public convenience init?(_ parameters: InitializeParams) {
+        guard let rootPath = parameters.rootPath.map(AbsolutePath.init) else {
             return nil
         }
-        self = Workspace(inDirectory: URL(fileURLWithPath: rootPath, isDirectory: true))
+        self.init(inDirectory: rootPath)
     }
 
-    /// Initailize an instance of the `Workspace` for a given directory`.
+    /// Initailize the server for a given directory on the local filesystem.
     ///
-    /// - Parameter inDirectory: A fully qulified on the filesystem to the `Workspace`.
-    init(inDirectory: URL) {
+    /// - Parameter inDirectory: A fully qulified on the filesystem to the `Server`.
+    init(inDirectory path: AbsolutePath) {
+        let buildPath = path.appending(component: ".build")
+        let edit = path.appending(component: "Packages")
+        let pins = path.appending(component: "Package.pins")
+        let toolchain = try! LanguageServerToolchain()
+        let manifestLoader = ManifestLoader(resources: toolchain)
+        let delegate = ToolWorkspaceDelegate()
+        let ws = try! Workspace(dataPath: buildPath, editablesPath: edit, pinsFile: pins, manifestLoader: manifestLoader, delegate: delegate)
+        ws.registerPackage(at: path)
+        let pg = try! ws.loadPackageGraph()
+        let buildFlags = BuildFlags()
         sourceKitSession = SourceKit.Session()
-        root = inDirectory
-        modules = []
+        modules = Set(example(buildPath, .debug, pg, flags: buildFlags, toolchain: toolchain)
+            .map({ SwiftModule(module: $0.0, commands: $0.1) }))
     }
 
     /// A description to the client of the types of services this language server provides.
@@ -68,7 +80,7 @@ public struct Workspace {
             renameProvider: false)
     }
 
-    /// Find a `TextDocument` in the `Workspace`.
+    /// Find a `TextDocument`.
     ///
     /// Essentially this is a `throw`-ing `subscript` for the `index` Dictionary.
     ///
@@ -85,32 +97,26 @@ public struct Workspace {
 
     // MARK: - Language Server Protocol methods
 
-    public mutating func receive(notification parameters: DidChangeWatchedFilesParams) {
+    public func receive(notification parameters: DidChangeWatchedFilesParams) {
 
     }
 
-    /// Notify the `Workspace` that the client has opened a document in the workspace.
-    ///
-    /// - Note: If the `TextDocument` cannot be found in the `Workspace` `index` it is automatically
-    /// added to the `index`.
+    /// Notify the `Server` that the client has opened a document in the workspace.
     ///
     /// - Parameter document: Information about which `TextDocument` was opened by the client.
-    public mutating func client(opened document: DidOpenTextDocumentParams) {
+    public func client(opened document: DidOpenTextDocumentParams) {
         let url = document.textDocument.uri
         if var module = modules.lazy.first(where: { $0.root.isParent(of: url) }) {
             module.sources[url] = document.textDocument
             modules.update(with: module)
-        } else {
-            let module = SwiftModule("🤦🏻‍♂️", locations: [url])
-            modules.update(with: module)
         }
     }
 
-    /// Notify the `Workspace` that the client has modified the contents of a document in the workspace.
+    /// Notify the `Server` that the client has modified the contents of a document in the workspace.
     ///
     /// - Parameter document: Information about which `TextDocument` was modified by the client.
-    /// - Throws: `WorkspaceError.notFound` if it cannot find the `TextDocument` in the `Workspace` `index`.
-    public mutating func client(modified document: DidChangeTextDocumentParams) throws {
+    /// - Throws: `WorkspaceError.notFound` if it cannot find the `TextDocument` in the `Server` `index`.
+    public func client(modified document: DidChangeTextDocumentParams) throws {
         guard let changes = document.contentChanges.first else { return }
         let url = document.textDocument.uri
         var (module, source) = try getSource(url)
@@ -119,18 +125,15 @@ public struct Workspace {
         modules.update(with: module)
     }
 
-    /// Notify the `Workspace` that the client has closed the `TextDocument` and that it can get the truth
+    /// Notify the `Server` that the client has closed the `TextDocument` and that it can get the truth
     /// about the `TextDocument` from the file system.
     ///
     /// - Parameter document: Information about which `TextDocument` was closed by the client.
-    public mutating func client(closed document: DidCloseTextDocumentParams) {
+    public func client(closed document: DidCloseTextDocumentParams) {
         let url = document.textDocument.uri
         let document = TextDocument(url)
         if var module = modules.lazy.first(where: { $0.root.isParent(of: url) }) {
             module.sources[url] = document
-            modules.update(with: module)
-        } else {
-            let module = SwiftModule("🤦🏻‍♂️", locations: [url])
             modules.update(with: module)
         }
     }
@@ -149,7 +152,7 @@ public struct Workspace {
         return result.value
     }
 
-    /// Find the definition of a symbol in the `Workspace` and provide the `Location` of same definition.
+    /// Find the definition of a symbol and provide the `Location` of same definition.
     ///
     /// - Parameter at: A `TextDocument` and a position inside that document.
     /// - Returns: `Location` of the definition of the symbol.
@@ -171,7 +174,7 @@ public struct Workspace {
         }
     }
 
-    /// Find information about a symbol in the `Workspace`.
+    /// Find information about a symbol.
     ///
     /// - Parameter at: A `TextDocument` and a position inside that document.
     /// - Returns: `Hover` information about the requested symbol.

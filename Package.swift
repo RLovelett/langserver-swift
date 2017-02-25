@@ -12,7 +12,8 @@ let package = Package(
         .Package(url: "https://github.com/RLovelett/SourceKit.git", majorVersion: 1),
         .Package(url: "https://github.com/thoughtbot/Argo.git", majorVersion: 4),
         .Package(url: "https://github.com/edwardaux/Ogra.git", majorVersion: 4),
-        .Package(url: "https://github.com/thoughtbot/Curry.git", majorVersion: 3)
+        .Package(url: "https://github.com/thoughtbot/Curry.git", majorVersion: 3),
+        .Package(url: "https://github.com/RLovelett/swift-package-manager.git", majorVersion: 3)
     ]
 )
 

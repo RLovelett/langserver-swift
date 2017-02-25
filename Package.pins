@@ -30,6 +30,12 @@
       "reason": null,
       "repositoryURL": "https://github.com/RLovelett/SourceKit.git",
       "version": "1.0.2"
+    },
+    {
+      "package": "SwiftPM",
+      "reason": null,
+      "repositoryURL": "https://github.com/RLovelett/swift-package-manager.git",
+      "version": "3.1.1-beta.1"
     }
   ],
   "version": 1
