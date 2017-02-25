@@ -11,7 +11,7 @@ import BaseProtocol
 import Foundation
 import LanguageServerProtocol
 
-var workspace: Workspace!
+var workspace: Server!
 var exitCode: Int32 = 1
 
 func handle(_ request: Request) -> Response {
@@ -19,7 +19,7 @@ func handle(_ request: Request) -> Response {
         switch request.method {
         case "initialize":
             let parameters: InitializeParams = try request.parse()
-            workspace = Workspace(parameters)
+            workspace = Server(parameters)
             let response = Response(to: request, is: InitializeResult(workspace.capabilities))
             return response
         case "workspace/didChangeWatchedFiles":
