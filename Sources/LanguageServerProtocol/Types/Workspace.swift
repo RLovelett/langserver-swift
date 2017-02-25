@@ -9,6 +9,8 @@
 import Argo
 import Foundation
 import SourceKittenFramework
+import YamlConvertable
+import Yams
 
 /// A directory on the local filesystem that contains all of the sources of the Swift project.
 public struct Workspace {
@@ -17,7 +19,7 @@ public struct Workspace {
     let root: URL
 
     /// All the Swift source documents on the filesystem in the `Workspace`.
-    fileprivate var index: [ URL : TextDocument ] = [ : ]
+    fileprivate var modules: Set<SwiftModule> = []
 
     /// Attempt to create a `Workspace` from parameters provided via the language server protocol.
     ///
@@ -37,22 +39,21 @@ public struct Workspace {
     /// - Parameter inDirectory: A fully qulified on the filesystem to the `Workspace`.
     init(inDirectory: URL) {
         root = inDirectory
-        let s = WorkspaceSequence(root: root).lazy
-            .filter({ $0.isFileURL && $0.isFile })
-            .filter({ $0.pathExtension.lowercased() == "swift" }) // Check if file is a Swift source file (e.g., has `.swift` extension)
-            .flatMap(TextDocument.init)
-            .map({ (key: $0.uri, value: $0) })
-        let i = Dictionary(s)
-        index = i
-    }
+        let llbuild = root.appendingPathComponent(".build", isDirectory: true)
+            .appendingPathComponent("debug", isDirectory: false)
+            .appendingPathExtension("yaml")
+        let yamlModules: Decoded<[SwiftModule]> = Decoded<Node>.fromOptional(
+                (try? String(contentsOf: llbuild, encoding: .utf8))
+                    .flatMap({ try? Node(string: $0) }))
+            .flatMap({ flatReduce(["commands"], initial: $0, combine: convertedYAML) })
+            .flatMap(SwiftModule.decodeAndFilterFailed)
 
-    var isSwiftPackage: Bool {
-        let pkg = root.appendingPathComponent("Package").appendingPathExtension("swift")
-        return index.keys.contains(pkg)
-    }
-
-    var arguments: [String] {
-        return index.values.map({ $0.uri.path })
+        switch yamlModules {
+        case .success(let a) where !a.isEmpty:
+            modules = Set(a)
+        default:
+            modules = [SwiftModule(root)]
+        }
     }
 
     /// A description to the client of the types of services this language server provides.
@@ -83,15 +84,37 @@ public struct Workspace {
     /// - Parameter uri: Fully-qualified path to the `TextDocument` to find.
     /// - Returns: The found `TextDocument` or `throws` if not found.
     /// - Throws: `WorkspaceError.notFound` if it cannot find the `TextDocument` in the `Workspace` `index`.
-    func getSource(_ uri: URL) throws -> TextDocument {
-        guard let source = index[uri] else {
-            throw WorkspaceError.notFound(uri)
+    func getSource(_ uri: URL) throws -> (SwiftModule, TextDocument) {
+        for module in modules {
+            guard let source = module.sources[uri] else { continue }
+            return (module, source)
         }
-
-        return source
+        throw WorkspaceError.notFound(uri)
     }
 
     // MARK: - Language Server Protocol methods
+
+    public mutating func receive(notification parameters: DidChangeWatchedFilesParams) {
+        let x: [SwiftModule] = parameters.changes
+            .filter({ $0.uri.pathExtension == "yaml" })
+            .flatMap({ try? String(contentsOf: $0.uri) })
+            .flatMap({ try? Node(string: $0) })
+            .flatMap({ flatReduce(["commands"], initial: $0, combine: convertedYAML).flatMap(SwiftModule.decodeAndFilterFailed).value })
+            .flatMap({ $0 })
+        let moduleChanges = Set<SwiftModule>(x)
+
+        // Remove any missing modules
+        modules = modules.intersection(moduleChanges)
+
+//        for changedModule in moduleChanges {
+//            if let index = modules.index(of: changedModule) {
+//                var oldModule = modules[index]
+//                oldModule
+//            } else {
+//                modules
+//            }
+//        }
+    }
 
     /// Notify the `Workspace` that the client has opened a document in the workspace.
     ///
@@ -99,40 +122,55 @@ public struct Workspace {
     /// added to the `index`.
     ///
     /// - Parameter document: Information about which `TextDocument` was opened by the client.
-    public mutating func open(byClient document: DidOpenTextDocumentParams) {
+    public mutating func client(opened document: DidOpenTextDocumentParams) {
         let url = document.textDocument.uri
-        index[url] = document.textDocument
+        if var module = modules.lazy.first(where: { $0.root.isParent(of: url) }) {
+            module.sources[url] = document.textDocument
+            modules.update(with: module)
+        } else {
+            let module = SwiftModule("🤦🏻‍♂️", locations: [url])
+            modules.update(with: module)
+        }
     }
 
     /// Notify the `Workspace` that the client has modified the contents of a document in the workspace.
     ///
     /// - Parameter document: Information about which `TextDocument` was modified by the client.
     /// - Throws: `WorkspaceError.notFound` if it cannot find the `TextDocument` in the `Workspace` `index`.
-    public mutating func update(byClient document: DidChangeTextDocumentParams) throws {
+    public mutating func client(modified document: DidChangeTextDocumentParams) throws {
         guard let changes = document.contentChanges.first else { return }
         let url = document.textDocument.uri
-        let updated = try getSource(url).update(version: document.textDocument.version, andText: changes.text)
-        index[url] = updated
+        var (module, source) = try getSource(url)
+        let updated = source.update(version: document.textDocument.version, andText: changes.text)
+        module.sources[url] = updated
+        modules.update(with: module)
     }
 
     /// Notify the `Workspace` that the client has closed the `TextDocument` and that it can get the truth
     /// about the `TextDocument` from the file system.
     ///
     /// - Parameter document: Information about which `TextDocument` was closed by the client.
-    public mutating func close(byClient document: DidCloseTextDocumentParams) {
+    public mutating func client(closed document: DidCloseTextDocumentParams) {
         let url = document.textDocument.uri
-        index[url] = TextDocument(url)
+        let document = TextDocument(url)
+        if var module = modules.lazy.first(where: { $0.root.isParent(of: url) }) {
+            module.sources[url] = document
+            modules.update(with: module)
+        } else {
+            let module = SwiftModule("🤦🏻‍♂️", locations: [url])
+            modules.update(with: module)
+        }
     }
 
     private func getCursor(forText at: TextDocumentPositionParams) throws -> Cursor? {
         let url = at.textDocument.uri
-        let source = try getSource(url)
+        let (module, source) = try getSource(url)
         let offset = try Int64(source.lines.byteOffset(at: at.position))
 
         // SourceKit may send back JSON that is an empty object. This is _not_ an error condition.
         // So we have to seperate SourceKit throwing an error from SourceKit sending back a
         // "malformed" Cursor structure.
-        let json: Any = try Request.cursorInfo(file: at.textDocument.uri.path, offset: offset, arguments: arguments).failableSend()
+        let json: Any = try Request.cursorInfo(file: url.path, offset: offset, arguments: module.arguments).sendAndReceiveJSON()
 
         return Cursor.decode(JSON(json)).value
     }
@@ -150,7 +188,8 @@ public struct Workspace {
 
         switch c.defined {
         case let .local(filepath, symbolOffset, symbolLength):
-            let range = try getSource(filepath).lines.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
+            let (_, source) = try getSource(filepath)
+            let range = try source.lines.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
             let location = Location(uri: filepath.absoluteString, range: range)
             return [location]
         case .system(_):
@@ -173,7 +212,8 @@ public struct Workspace {
 
         switch c.defined {
         case let .local(filepath, symbolOffset, symbolLength):
-            let range = try getSource(filepath).lines.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
+            let (_, source) = try getSource(filepath)
+            let range = try source.lines.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
             return Hover(contents: contents, range: range)
         case .system(_):
             return Hover(contents: contents, range: .none)
@@ -187,13 +227,13 @@ public struct Workspace {
     /// - Throws: `WorkspaceError` for any of a number of reasons. See: `WorkspaceError` for more information.
     public func complete(forText at: TextDocumentPositionParams) throws -> [CompletionItem] {
         let url = at.textDocument.uri
-        let source = try getSource(url)
+        let (module, source) = try getSource(url)
         let offset = try Int64(source.lines.byteOffset(at: at.position))
         let request = Request.codeCompletionRequest(
-            file: at.textDocument.uri.path,
+            file: url.path,
             contents: source.text,
             offset: offset,
-            arguments: arguments)
+            arguments: module.arguments)
         return request.decode().value ?? []
     }
 

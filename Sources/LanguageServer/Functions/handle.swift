@@ -22,17 +22,21 @@ func handle(_ request: Request) -> Response {
             workspace = Workspace(parameters)
             let response = Response(to: request, is: InitializeResult(workspace.capabilities))
             return response
+        case "workspace/didChangeWatchedFiles":
+            let parameters: DidChangeWatchedFilesParams = try request.parse()
+            workspace.receive(notification: parameters)
+            return Response(to: request, is: JSON.null)
         case "textDocument/didChange":
-            let parameters: DidChangeTextDocumentParams = try request.parse()
-            try workspace.update(byClient: parameters)
+            let document: DidChangeTextDocumentParams = try request.parse()
+            try workspace.client(modified: document)
             return Response(to: request, is: JSON.null)
         case "textDocument/didClose":
-            let parameters: DidCloseTextDocumentParams = try request.parse()
-            workspace.close(byClient: parameters)
+            let document: DidCloseTextDocumentParams = try request.parse()
+            workspace.client(closed: document)
             return Response(to: request, is: JSON.null)
         case "textDocument/didOpen":
-            let parameters: DidOpenTextDocumentParams = try request.parse()
-            workspace.open(byClient: parameters)
+            let document: DidOpenTextDocumentParams = try request.parse()
+            workspace.client(opened: document)
             return Response(to: request, is: JSON.null)
 //        case "textDocument/didSave":
 //            fatalError("\(request.method) is not implemented yet.")

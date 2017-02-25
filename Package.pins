@@ -47,7 +47,7 @@
       "package": "SWXMLHash",
       "reason": null,
       "repositoryURL": "https://github.com/drmohundro/SWXMLHash.git",
-      "version": "3.0.4"
+      "version": "3.0.3"
     },
     {
       "package": "SourceKit",
@@ -59,13 +59,13 @@
       "package": "SourceKitten",
       "reason": null,
       "repositoryURL": "https://github.com/RLovelett/SourceKitten.git",
-      "version": "0.18.0-beta.2"
+      "version": "0.18.0-beta.1"
     },
     {
       "package": "Yams",
       "reason": null,
       "repositoryURL": "https://github.com/jpsim/Yams.git",
-      "version": "0.2.0"
+      "version": "0.1.4"
     }
   ],
   "version": 1
