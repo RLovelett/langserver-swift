@@ -15,18 +15,20 @@ Currently this implementation is used by [Swift for Visual Studio Code](https://
 
 ### Swift
 
-* Swift Open Source `swift-DEVELOPMENT-SNAPSHOT-2016-12-01-a` toolchain (**Minimum REQUIRED for latest release**)
+* The toolchain that comes with Xcode 8.3 beta 3 (`Apple Swift version 3.1 (swiftlang-802.0.36.2 clang-802.0.35)`)
 
 ### macOS
 
-* macOS 10.11.6 (*El Capitan*) or higher
-* Xcode Version 8.2 beta (8C30a) or higher using one of the above toolchains (*Recommended*)
+* macOS 10.12 (*Sierra*) or higher
+* Xcode Version 8.3 beta 3 (8W132p) or higher using one of the above toolchains (*Recommended*)
 
 ### Linux
 
 * **Coming Soon**
 
 ## Build
+
+**NOTE**: You may first need to switch to using the Xcode beta (e.g., `sudo xcode-select -switch /Applications/Xcode-beta.app/Contents/Developer`)
 
 ```
 % cd <path-to-clone>
