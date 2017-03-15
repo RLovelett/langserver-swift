@@ -7,7 +7,10 @@
 //
 
 import Foundation
+import os.log
 
+@available(macOS 10.12, *)
+private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "RequestIterator")
 fileprivate let terminatorPattern = Data(bytes: [0x0D, 0x0A, 0x0D, 0x0A]) // "\r\n\r\n"
 
 public struct RequestIterator {
@@ -21,7 +24,14 @@ public struct RequestIterator {
     }
 
     mutating public func append(_ data: Data) {
+        if #available(macOS 10.12, *) {
+            os_log("Adding %{iec-bytes}d to the request buffer which has %{iec-bytes}d", log: log, type: .default, data.count, iterator.data.count)
+        }
         iterator.append(data)
+        if #available(macOS 10.12, *), let new = String(bytes: data, encoding: .utf8), let buffer = String(bytes: iterator.data, encoding: .utf8) {
+            os_log("Added: %{public}@", log: log, type: .default, new)
+            os_log("Buffer: %{public}@", log: log, type: .default, buffer)
+        }
     }
 
 }

@@ -26,8 +26,6 @@ dataAvailable = NotificationCenter.default.addObserver(forName: .NSFileHandleDat
     let requests = AnySequence<Data>() { iterator }
 
     for requestBuffer in requests {
-        let str = String(data: buffer, encoding: .utf8) ?? "Expected UTF-8 encoding."
-
         do {
             let request = try Request(requestBuffer)
             let response = handle(request)

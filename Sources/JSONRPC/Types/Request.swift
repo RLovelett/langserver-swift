@@ -10,6 +10,10 @@ import Argo
 import Curry
 import Foundation
 import Runes
+import os.log
+
+@available(macOS 10.12, *)
+private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Request")
 
 /// A JSON-RPC
 public enum Request {
@@ -76,6 +80,10 @@ public enum Request {
     public init(_ data: Data) throws {
         guard let serialized = try? JSONSerialization.jsonObject(with: data, options: []) else {
             throw PredefinedError.parse
+        }
+
+        if #available(macOS 10.12, *) {
+            os_log("%{public}@", log: log, type: .default, String(bytes: data, encoding: .utf8)!)
         }
 
         let json = JSON(serialized)
