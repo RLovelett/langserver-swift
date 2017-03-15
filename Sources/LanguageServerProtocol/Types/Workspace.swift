@@ -10,8 +10,6 @@ import Argo
 import Foundation
 import os.log
 import SourceKitter
-import YamlConvertable
-import Yams
 
 @available(macOS 10.12, *)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
@@ -46,21 +44,7 @@ public struct Workspace {
     init(inDirectory: URL) {
         sourceKitSession = SourceKit.Session()
         root = inDirectory
-        let llbuild = root.appendingPathComponent(".build", isDirectory: true)
-            .appendingPathComponent("debug", isDirectory: false)
-            .appendingPathExtension("yaml")
-        let yamlModules: Decoded<[SwiftModule]> = Decoded<Node>.fromOptional(
-                (try? String(contentsOf: llbuild, encoding: .utf8))
-                    .flatMap({ try? Node(string: $0) }))
-            .flatMap({ flatReduce(["commands"], initial: $0, combine: convertedYAML) })
-            .flatMap(SwiftModule.decodeAndFilterFailed)
-
-        switch yamlModules {
-        case .success(let a) where !a.isEmpty:
-            modules = Set(a)
-        default:
-            modules = [SwiftModule(root)]
-        }
+        modules = []
     }
 
     /// A description to the client of the types of services this language server provides.
@@ -102,25 +86,7 @@ public struct Workspace {
     // MARK: - Language Server Protocol methods
 
     public mutating func receive(notification parameters: DidChangeWatchedFilesParams) {
-        let x: [SwiftModule] = parameters.changes
-            .filter({ $0.uri.pathExtension == "yaml" })
-            .flatMap({ try? String(contentsOf: $0.uri) })
-            .flatMap({ try? Node(string: $0) })
-            .flatMap({ flatReduce(["commands"], initial: $0, combine: convertedYAML).flatMap(SwiftModule.decodeAndFilterFailed).value })
-            .flatMap({ $0 })
-        let moduleChanges = Set<SwiftModule>(x)
 
-        // Remove any missing modules
-        modules = modules.intersection(moduleChanges)
-
-//        for changedModule in moduleChanges {
-//            if let index = modules.index(of: changedModule) {
-//                var oldModule = modules[index]
-//                oldModule
-//            } else {
-//                modules
-//            }
-//        }
     }
 
     /// Notify the `Workspace` that the client has opened a document in the workspace.
