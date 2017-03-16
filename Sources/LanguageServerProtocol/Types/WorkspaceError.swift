@@ -6,8 +6,8 @@
 //
 //
 
+import BaseProtocol
 import Foundation
-import JSONRPC
 
 enum WorkspaceError : ServerError {
 

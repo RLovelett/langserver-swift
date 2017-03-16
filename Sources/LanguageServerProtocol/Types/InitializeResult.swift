@@ -7,7 +7,6 @@
 //
 
 import Argo
-import JSONRPC
 import Ogra
 
 /// The response to the 'initialize' request.

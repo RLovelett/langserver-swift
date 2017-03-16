@@ -6,14 +6,14 @@
 //
 //
 
-@testable import LanguageServerProtocol
+@testable import BaseProtocol
 import XCTest
 
 class RequestIteratorTests: XCTestCase {
 
     func testIteratingMultipleRequestsAndHeaders() {
         let d = loadFixture("multiple-requests-and-headers.txt", in: "JSON-RPC/Requests")!
-        let c = Array(AnySequence { RequestIterator(d) })
+        let c = Array(AnySequence { RequestBuffer(d) })
 
         XCTAssertEqual(c.count, 4)
         XCTAssertEqual(c.map({ $0.count }), [270, 62, 271, 222])
@@ -21,7 +21,7 @@ class RequestIteratorTests: XCTestCase {
 
     func testIteratingFullAndPartialRequestsWithoutCrash() {
         let d = loadFixture("partial-request.txt", in: "JSON-RPC/Requests")!
-        var it = RequestIterator(d)
+        let it = RequestBuffer(d)
 
         let first = it.next()
         XCTAssertEqual(first?.count, 282)
@@ -37,7 +37,7 @@ class RequestIteratorTests: XCTestCase {
         let d2 = loadFixture("partial-request-2.txt", in: "JSON-RPC/Requests")!
         let d3 = loadFixture("partial-request-3.txt", in: "JSON-RPC/Requests")!
 
-        var it = RequestIterator(Data())
+        let it = RequestBuffer(Data())
         // Since no data was sent to start it should have nothing in it
         XCTAssertNil(it.next())
         XCTAssertNil(it.next())

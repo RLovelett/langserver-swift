@@ -1,6 +1,6 @@
+import BaseProtocol
 import Dispatch
 import Foundation
-import JSONRPC
 import LanguageServerProtocol
 
 private let header: [String : String] = [
@@ -9,7 +9,7 @@ private let header: [String : String] = [
 
 let main = OperationQueue.main
 let stdin = FileHandle.standardInput
-var iterator = RequestIterator(Data())
+var requests = RequestBuffer()
 stdin.waitForDataInBackgroundAndNotify()
 
 // When new data is available
@@ -21,9 +21,7 @@ dataAvailable = NotificationCenter.default.addObserver(forName: .NSFileHandleDat
         return stdin.waitForDataInBackgroundAndNotify()
     }
 
-    iterator.append(buffer)
-
-    let requests = AnySequence<Data>() { iterator }
+    requests.append(buffer)
 
     for requestBuffer in requests {
         do {

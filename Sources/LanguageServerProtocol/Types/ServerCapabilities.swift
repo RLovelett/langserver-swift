@@ -8,7 +8,6 @@
 
 import Argo
 import Foundation
-import JSONRPC
 import Ogra
 
 /// The capabilities the language server provides.

@@ -16,7 +16,7 @@ struct MultibyteDataIterator {
 
     fileprivate let calculateNewIndex: (Data) -> Data.Index?
 
-    init(split: Data, onSeparator: Data, calculateIndex: @escaping (Data) -> Data.Index?) {
+    init(split: inout Data, onSeparator: Data, calculateIndex: @escaping (Data) -> Data.Index?) {
         separator = onSeparator
         data = split
         calculateNewIndex = calculateIndex

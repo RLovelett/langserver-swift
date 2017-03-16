@@ -7,8 +7,8 @@
 //
 
 import Argo
+import BaseProtocol
 import Curry
-import JSONRPC
 import Runes
 import XCTest
 

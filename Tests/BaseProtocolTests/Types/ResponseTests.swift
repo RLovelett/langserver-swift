@@ -7,8 +7,8 @@
 //
 
 import Argo
+@testable import BaseProtocol
 import Foundation
-@testable import JSONRPC
 import XCTest
 
 fileprivate func stringify(_ data: Data) -> String {

@@ -7,8 +7,8 @@
 //
 
 import Argo
+import BaseProtocol
 import Foundation
-import JSONRPC
 import LanguageServerProtocol
 
 var workspace: Workspace!

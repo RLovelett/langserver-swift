@@ -3,10 +3,10 @@ import PackageDescription
 let package = Package(
     name: "langserver-swift",
     targets: [
-        Target(name: "JSONRPC"),
+        Target(name: "BaseProtocol"),
         Target(name: "YamlConvertable"),
-        Target(name: "LanguageServerProtocol", dependencies: ["YamlConvertable", "JSONRPC"]),
-        Target(name: "LanguageServer", dependencies: ["LanguageServerProtocol", "JSONRPC"])
+        Target(name: "LanguageServerProtocol", dependencies: ["YamlConvertable", "BaseProtocol"]),
+        Target(name: "LanguageServer", dependencies: ["LanguageServerProtocol", "BaseProtocol"])
     ],
     dependencies: [
         .Package(url: "https://github.com/RLovelett/SourceKitten.git", majorVersion: 0),
