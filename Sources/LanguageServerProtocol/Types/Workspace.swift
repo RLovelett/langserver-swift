@@ -8,9 +8,13 @@
 
 import Argo
 import Foundation
+import os.log
 import SourceKittenFramework
 import YamlConvertable
 import Yams
+
+@available(macOS 10.12, *)
+private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
 
 /// A directory on the local filesystem that contains all of the sources of the Swift project.
 public struct Workspace {
@@ -229,6 +233,11 @@ public struct Workspace {
         let url = at.textDocument.uri
         let (module, source) = try getSource(url)
         let offset = try Int64(source.lines.byteOffset(at: at.position))
+        if #available(macOS 10.12, *) {
+            os_log("%{public}@", log: log, type: .default, url as NSURL)
+            os_log("Line %d, character %d, byte %d", log: log, type: .default, at.position.line, at.position.character, offset)
+            os_log("%{public}@", log: log, type: .default, module.arguments.joined(separator: ", "))
+        }
         let request = Request.codeCompletionRequest(
             file: url.path,
             contents: source.text,

@@ -37,7 +37,8 @@ public enum CompletionItemKind : Int {
             self = .Function
         case "source.lang.swift.decl.function.constructor":
             self = .Constructor
-        case "source.lang.swift.decl.var.global":
+        case "source.lang.swift.decl.var.global",
+             "source.lang.swift.decl.var.instance":
             self = .Variable
         case "source.lang.swift.decl.class":
             self = .Class
@@ -47,7 +48,8 @@ public enum CompletionItemKind : Int {
             self = .Value //Maybe?
         case "source.lang.swift.decl.enum":
             self = .Enum
-        case "source.lang.swift.keyword":
+        case "source.lang.swift.keyword",
+             "source.lang.swift.decl.function.operator.infix":
             self = .Keyword
         case "source.lang.swift.literal.color":
             self = .Color
