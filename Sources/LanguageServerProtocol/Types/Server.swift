@@ -73,7 +73,7 @@ public class Server {
             referencesProvider: false,
             documentHighlighProvider: false,
             documentSymbolProvider: false,
-            workspaceSymbolProvider: false,
+            workspaceSymbolProvider: true,
             codeActionProvider: false,
             documentFormattingProvider: false,
             documentRangeFormattingProvider: false,

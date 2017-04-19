@@ -59,8 +59,11 @@ func handle(_ request: Request) -> Response {
 //            fatalError("\(request.method) is not implemented yet.")
 //        case "textDocument/references":
 //            fatalError("\(request.method) is not implemented yet.")
-//        case "workspace/symbol":
-//            fatalError("\(request.method) is not implemented yet.")
+        case "workspace/symbol":
+            let parameters: WorkspaceSymbolParams = try request.parse()
+            let foo: [SymbolInformation] = []
+            let response = Response(to: request, is: foo)
+            return response
         case "shutdown":
             workspace = nil
             // The server should exit with `success` code 0 if the shutdown request has been received
