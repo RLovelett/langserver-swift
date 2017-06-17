@@ -4,6 +4,7 @@
 ![Linux](https://img.shields.io/badge/os-linux-green.svg?style=flat)
 ![Apache 2](https://img.shields.io/badge/license-Apache2-blue.svg?style=flat)
 ![](https://img.shields.io/badge/Swift-3.1.1-orange.svg?style=flat)
+[![Build Status](https://travis-ci.org/RLovelett/langserver-swift.svg?branch=master)](https://travis-ci.org/RLovelett/langserver-swift)
 [![Join the chat at https://gitter.im/langserver-swift](https://badges.gitter.im/langserver-swift/Lobby.svg)](https://gitter.im/langserver-swift?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Overview
