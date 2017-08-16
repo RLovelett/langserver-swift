@@ -74,7 +74,7 @@ public struct Response {
     public func data(_ headers: [String : String] = [ : ]) -> Data {
         var mutableHeader = headers
 
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: json.JSONObject(), options: .prettyPrinted) else {
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: json.JSONObject()) else {
             return pattern
         }
 
