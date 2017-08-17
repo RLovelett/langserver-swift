@@ -33,21 +33,21 @@ Currently this implementation is used by [Swift for Visual Studio Code](https://
 
 ```
 % cd <path-to-clone>
-% swift build -Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
+% make debug
 ```
 
 or with Xcode
 
 ```
 % cd <path-to-clone>
-% swift package generate-xcodeproj --xcconfig-overrides settings.xcconfig
+% make xcodeproj
 ```
 
 # Test
 
 ```
 % cd <path-to-clone>
-% swift test -Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
+% make test
 ```
 # Debug and Development
 
@@ -62,7 +62,7 @@ In the directory containing the clone of this repository use SwiftPM to generate
 ```
 % git clone https://github.com/RLovelett/langserver-swift.git
 % cd langserver-swift
-% swift package generate-xcodeproj --xcconfig-overrides settings.xcconfig
+% make xcodeproj
 ```
 
 Since the language server client, e.g., VSCode, will actually launch the language server LLDB needs to be told to wait for the application to launch. This can be configured in Xcode after opening the generated project in Xcode. See the screenshot below.
@@ -80,6 +80,12 @@ From a terminal whose current working directory contains the Xcode project previ
 ```
 % xcodebuild -project langserver-swift.xcodeproj -target "LanguageServer" -showBuildSettings | grep "TARGET_BUILD_DIR"
    TARGET_BUILD_DIR = /Users/ryan/Library/Developer/Xcode/DerivedData/langserver-swift-gellhgzzpradfqbgjnbtkvzjqymv/Build/Products/Debug
+```
+
+Or using `make`:
+
+```
+% make print_target_build_dir
 ```
 
 Take note of this value it will be used later.
