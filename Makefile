@@ -1,0 +1,57 @@
+DefaultBuildFlags=-Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
+DebugBuildFlags=$(DefaultBuildFlags)
+ReleaseBuildFlags=$(DefaultBuildFlags) -Xswiftc -static-stdlib -c release
+
+.PHONY: debug
+## Build the package in debug
+debug:
+	swift build $(DebugBuildFlags)
+
+.PHONY: release
+## Build the package in release
+release:
+	swift build $(ReleaseBuildFlags)
+
+.PHONY: test
+## Build and run the tests
+test:
+	swift test $(DebugBuildFlags)
+
+.PHONY: xcodeproj
+## Generate the Xcode project
+xcodeproj:
+	swift package generate-xcodeproj --xcconfig-overrides settings.xcconfig
+
+.PHONY: print_target_build_dir
+## Print Xcode project's TARGET_BUILD_DIR value to use for debugging purposes
+print_target_build_dir: xcodeproj
+	xcodebuild -project langserver-swift.xcodeproj -target "LanguageServer" -showBuildSettings | grep "TARGET_BUILD_DIR"
+
+.PHONY: ci
+## Operations to run for Continuous Integration
+ci: tools_versions debug test release
+
+.PHONY: tools_versions
+## Print the tools versions to STDOUT
+tools_versions:
+	swift --version
+	swift build --version
+
+.PHONY: help
+# taken from this gist https://gist.github.com/rcmachado/af3db315e31383502660
+## Show this help message.
+help:
+	$(info Usage: make [target...])
+	$(info Available targets)
+	@awk '/^[a-zA-Z\-\_0-9]+:/ {                    \
+		nb = sub( /^## /, "", helpMsg );              \
+		if(nb == 0) {                                 \
+			helpMsg = $$0;                              \
+			nb = sub( /^[^:]*:.* ## /, "", helpMsg );   \
+		}                                             \
+		if (nb)                                       \
+			print  $$1 "\t" helpMsg;                    \
+	}                                               \
+	{ helpMsg = $$0 }'                              \
+	$(MAKEFILE_LIST) | column -ts $$'\t' |          \
+	grep --color '^[^ ]*'

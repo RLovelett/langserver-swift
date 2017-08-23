@@ -2,8 +2,4 @@
 language: objective-c
 osx_image: xcode8.3
 script:
-  - swift --version
-  - swift build --version
-  - swift build -Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
-  - swift test -Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
-  - swift build -Xswiftc -static-stdlib -Xswiftc -target -Xswiftc x86_64-apple-macosx10.11 -c release
+  - make ci
