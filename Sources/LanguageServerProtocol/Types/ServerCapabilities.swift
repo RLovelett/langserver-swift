@@ -51,7 +51,7 @@ public struct ServerCapabilities {
 
 }
 
-extension ServerCapabilities : Encodable {
+extension ServerCapabilities : Ogra.Encodable {
 
     public func encode() -> JSON {
         var obj: [String : JSON] = [ : ]

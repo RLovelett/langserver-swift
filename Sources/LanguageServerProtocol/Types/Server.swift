@@ -8,16 +8,39 @@
 
 import Argo
 import struct Basic.AbsolutePath
-import func Build.example
+import class Basic.DiagnosticsEngine
+import class Basic.Process
+import struct Build.BuildParameters
+import class Build.BuildPlan
+import enum Build.TargetDescription
+import Commands
 import Foundation
 import os.log
 import class PackageLoading.ManifestLoader
+import class PackageModel.ResolvedTarget
 import SourceKitter
 import struct Utility.BuildFlags
 import class Workspace.Workspace
+import struct Workspace.WorkspaceRoot
 
 @available(macOS 10.12, *)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
+
+/// Find the bin directory that contains the Swift compiler.
+///
+/// - Warning: This is only really working on macOS.
+///
+/// - Returns: The absolute path to the bin directory containing the Swift compiler.
+func findBinDirectory() -> AbsolutePath {
+    let whichSwiftcArgs = ["xcrun", "--find", "swiftc"]
+    // No value in env, so search for `clang`.
+    let foundPath = (try? Process.checkNonZeroExit(arguments: whichSwiftcArgs).chomp()) ?? ""
+    guard !foundPath.isEmpty else {
+        // If `xcrun` fails just use a "default"; still might not work.
+        return AbsolutePath("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin")
+    }
+    return AbsolutePath(foundPath).parentDirectory
+}
 
 /// A directory on the local filesystem that contains all of the sources of the Swift project.
 public class Server {
@@ -46,17 +69,21 @@ public class Server {
     init(inDirectory path: AbsolutePath) {
         let buildPath = path.appending(component: ".build")
         let edit = path.appending(component: "Packages")
-        let pins = path.appending(component: "Package.pins")
-        let toolchain = try! LanguageServerToolchain()
-        let manifestLoader = ManifestLoader(resources: toolchain)
+        let pins = path.appending(component: "Package.resolved")
+        let binDirectory = findBinDirectory()
+        let destination = try! Destination.hostDestination(binDirectory)
+        let toolchain = try! UserToolchain(destination: destination)
+        let manifestLoader = ManifestLoader(resources: toolchain.manifestResources)
         let delegate = ToolWorkspaceDelegate()
-        let ws = try! Workspace(dataPath: buildPath, editablesPath: edit, pinsFile: pins, manifestLoader: manifestLoader, delegate: delegate)
-        ws.registerPackage(at: path)
-        let pg = try! ws.loadPackageGraph()
+        let ws = Workspace(dataPath: buildPath, editablesPath: edit, pinsFile: pins, manifestLoader: manifestLoader, delegate: delegate)
+        let root = WorkspaceRoot(packages: [path])
+        let engine = DiagnosticsEngine()
+        let pg = ws.loadPackageGraph(root: root, diagnostics: engine)
         let buildFlags = BuildFlags()
+        let parameters = BuildParameters(dataPath: buildPath, configuration: .debug, toolchain: toolchain, flags: buildFlags)
+        let plan = try! BuildPlan(buildParameters: parameters, graph: pg)
+        modules = Set(plan.targetMap.map { SwiftModule(target: $0.key, description: $0.value) })
         sourceKitSession = SourceKit.Session()
-        modules = Set(example(buildPath, .debug, pg, flags: buildFlags, toolchain: toolchain)
-            .map({ SwiftModule(module: $0.0, commands: $0.1) }))
     }
 
     /// A description to the client of the types of services this language server provides.

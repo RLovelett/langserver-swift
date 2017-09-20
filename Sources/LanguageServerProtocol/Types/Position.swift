@@ -24,7 +24,7 @@ public struct Position {
 
 }
 
-extension Position : Decodable {
+extension Position : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<Position> {
         let l: Decoded<Int> = json <| "line"
@@ -48,7 +48,7 @@ extension Position : Equatable {
     }
 }
 
-extension Position : Encodable {
+extension Position : Ogra.Encodable {
 
     public func encode() -> JSON {
         return JSON.object([

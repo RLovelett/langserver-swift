@@ -22,7 +22,7 @@ struct FileEvent {
 
 }
 
-extension FileEvent : Decodable {
+extension FileEvent : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<FileEvent> {
         return curry(FileEvent.init)

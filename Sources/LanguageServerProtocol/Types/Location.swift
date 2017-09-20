@@ -18,7 +18,7 @@ public struct Location {
 
 }
 
-extension Location : Encodable {
+extension Location : Ogra.Encodable {
 
     public func encode() -> JSON {
         return JSON.object([

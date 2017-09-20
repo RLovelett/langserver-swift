@@ -20,7 +20,7 @@ public struct CompletionOptions {
 
 }
 
-extension CompletionOptions : Encodable {
+extension CompletionOptions : Ogra.Encodable {
 
     public func encode() -> JSON {
         var obj: [String : Any] = [ : ]
