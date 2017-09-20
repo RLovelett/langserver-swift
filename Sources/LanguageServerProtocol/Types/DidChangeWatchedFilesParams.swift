@@ -17,7 +17,7 @@ public struct DidChangeWatchedFilesParams {
 
 }
 
-extension DidChangeWatchedFilesParams : Decodable {
+extension DidChangeWatchedFilesParams : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<DidChangeWatchedFilesParams> {
         return curry(DidChangeWatchedFilesParams.init(changes:)) <^> (json <|| "changes")

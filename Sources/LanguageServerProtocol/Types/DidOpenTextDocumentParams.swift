@@ -20,7 +20,7 @@ public struct DidOpenTextDocumentParams {
 
 }
 
-extension DidOpenTextDocumentParams : Decodable {
+extension DidOpenTextDocumentParams : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<DidOpenTextDocumentParams> {
         let textDocument: Decoded<TextDocument> = json <| "textDocument"

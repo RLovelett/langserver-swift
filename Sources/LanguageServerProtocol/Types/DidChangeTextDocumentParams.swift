@@ -21,7 +21,7 @@ public struct DidChangeTextDocumentParams {
 
 }
 
-extension DidChangeTextDocumentParams : Decodable {
+extension DidChangeTextDocumentParams : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<DidChangeTextDocumentParams> {
         let textDocument: Decoded<VersionedTextDocumentIdentifier> = json <| "textDocument"

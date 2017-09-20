@@ -8,7 +8,7 @@
 
 import Argo
 import struct Basic.AbsolutePath
-import func Build.example
+import Commands
 import Foundation
 import os.log
 import class PackageLoading.ManifestLoader
@@ -47,16 +47,18 @@ public class Server {
         let buildPath = path.appending(component: ".build")
         let edit = path.appending(component: "Packages")
         let pins = path.appending(component: "Package.pins")
-        let toolchain = try! LanguageServerToolchain()
-        let manifestLoader = ManifestLoader(resources: toolchain)
+        let destination = try! Destination.hostDestination()
+        let toolchain = try! UserToolchain(destination: destination)
+        let manifestLoader = ManifestLoader(resources: toolchain.manifestResources)
         let delegate = ToolWorkspaceDelegate()
-        let ws = try! Workspace(dataPath: buildPath, editablesPath: edit, pinsFile: pins, manifestLoader: manifestLoader, delegate: delegate)
-        ws.registerPackage(at: path)
-        let pg = try! ws.loadPackageGraph()
-        let buildFlags = BuildFlags()
+        let ws = Workspace(dataPath: buildPath, editablesPath: edit, pinsFile: pins, manifestLoader: manifestLoader, delegate: delegate)
+//        ws.registerPackage(at: path)
+//        let pg = try! ws.loadPackageGraph()
+//        let buildFlags = BuildFlags()
         sourceKitSession = SourceKit.Session()
-        modules = Set(example(buildPath, .debug, pg, flags: buildFlags, toolchain: toolchain)
-            .map({ SwiftModule(module: $0.0, commands: $0.1) }))
+//        modules = Set(example(buildPath, .debug, pg, flags: buildFlags, toolchain: toolchain)
+//            .map({ SwiftModule(module: $0.0, commands: $0.1) }))
+        modules = []
     }
 
     /// A description to the client of the types of services this language server provides.

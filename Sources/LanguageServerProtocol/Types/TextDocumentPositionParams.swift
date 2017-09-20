@@ -22,7 +22,7 @@ public struct TextDocumentPositionParams {
 
 }
 
-extension TextDocumentPositionParams : Decodable {
+extension TextDocumentPositionParams : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<TextDocumentPositionParams> {
         let td: Decoded<URL> = json <| ["textDocument", "uri"]

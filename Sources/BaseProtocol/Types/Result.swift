@@ -9,6 +9,6 @@
 import Ogra
 
 public enum Result {
-    case success(Encodable)
+    case success(Ogra.Encodable)
     case error(ServerError)
 }
