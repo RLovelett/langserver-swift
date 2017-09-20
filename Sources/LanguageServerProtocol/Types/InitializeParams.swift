@@ -27,7 +27,7 @@ public struct InitializeParams {
 
 }
 
-extension InitializeParams : Decodable {
+extension InitializeParams : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<InitializeParams> {
         let p: Decoded<Int?> = json <|? "processId"

@@ -61,7 +61,7 @@ public struct CompletionItem {
 
 }
 
-extension CompletionItem : Encodable {
+extension CompletionItem : Ogra.Encodable {
 
     public func encode() -> JSON {
         var obj: [String : JSON] = [
@@ -113,7 +113,7 @@ extension CompletionItem : Encodable {
 
 }
 
-extension CompletionItem : Decodable {
+extension CompletionItem : Argo.Decodable {
 
     fileprivate init(description: String, k: CompletionItemKind?, sourcetext: String, type: String?, brief: String?, context: String, bytesToErase: Int, associatedUSRs: String?, name: String, module: String?, notRecommended: Bool?) {
         label = description

@@ -76,7 +76,7 @@ extension TextDocument {
 
 }
 
-extension TextDocument : Decodable {
+extension TextDocument : Argo.Decodable {
 
     /// Create a new text document from JSON sent by the client.
     ///

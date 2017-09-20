@@ -21,7 +21,7 @@ public struct Response {
 
     let json: JSON
 
-    public init(to request: Request, is message: Encodable) {
+    public init(to request: Request, is message: Ogra.Encodable) {
         switch request {
         case .notification(method: _, params: _):
             json = .null
@@ -39,7 +39,7 @@ public struct Response {
         }
     }
 
-    public init<C: Collection>(to request: Request, is message: C) where C.Iterator.Element: Encodable {
+    public init<C: Collection>(to request: Request, is message: C) where C.Iterator.Element: Ogra.Encodable {
         switch request {
         case .notification(_, _):
             json = .null
