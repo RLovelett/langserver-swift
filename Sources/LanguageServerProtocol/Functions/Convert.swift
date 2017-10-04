@@ -43,6 +43,6 @@ func convert(_ sourceKit: String) -> Decoded<String> {
         result += "{{\(cursorIndex):\(group)}}"
         lastRange = matchRange
     }
-    result += sourceKit.substring(from: lastRange.upperBound)
+    result += sourceKit[lastRange.upperBound...]
     return pure(result)
 }

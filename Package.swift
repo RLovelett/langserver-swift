@@ -65,6 +65,5 @@ let package = Package(
                 "LanguageServerProtocol"
             ]
         ),
-    ],
-    swiftLanguageVersions: [3]
+    ]
 )
