@@ -8,6 +8,7 @@
 
 import Argo
 import struct Basic.AbsolutePath
+import class Basic.DiagnosticsEngine
 import Commands
 import Foundation
 import os.log
@@ -15,6 +16,7 @@ import class PackageLoading.ManifestLoader
 import SourceKitter
 import struct Utility.BuildFlags
 import class Workspace.Workspace
+import struct Workspace.WorkspaceRoot
 
 @available(macOS 10.12, *)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
@@ -46,14 +48,15 @@ public class Server {
     init(inDirectory path: AbsolutePath) {
         let buildPath = path.appending(component: ".build")
         let edit = path.appending(component: "Packages")
-        let pins = path.appending(component: "Package.pins")
-        let destination = try! Destination.hostDestination()
+        let pins = path.appending(component: "Package.resolved")
+        let destination = try! Destination.hostDestination(AbsolutePath("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"))
         let toolchain = try! UserToolchain(destination: destination)
         let manifestLoader = ManifestLoader(resources: toolchain.manifestResources)
         let delegate = ToolWorkspaceDelegate()
         let ws = Workspace(dataPath: buildPath, editablesPath: edit, pinsFile: pins, manifestLoader: manifestLoader, delegate: delegate)
-//        ws.registerPackage(at: path)
-//        let pg = try! ws.loadPackageGraph()
+        let root = WorkspaceRoot(packages: [path])
+        let engine = DiagnosticsEngine()
+        let pg = ws.loadPackageGraph(root: root, diagnostics: engine)
 //        let buildFlags = BuildFlags()
         sourceKitSession = SourceKit.Session()
 //        modules = Set(example(buildPath, .debug, pg, flags: buildFlags, toolchain: toolchain)
