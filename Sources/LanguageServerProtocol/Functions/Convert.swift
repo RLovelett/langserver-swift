@@ -29,10 +29,11 @@ func convert(_ sourceKit: String) -> Decoded<String> {
     var result = ""
     var lastRange = sourceKit.startIndex..<sourceKit.startIndex
     var cursorIndex = 0
-    regex.enumerateMatches(in: sourceKit, options: [], range: sourceKit.nsrange) { (x: NSTextCheckingResult?, _, _) -> Void in
+    let range = NSRange(sourceKit.startIndex..., in: sourceKit)
+    regex.enumerateMatches(in: sourceKit, options: [], range: range) { (x: NSTextCheckingResult?, _, _) -> Void in
         guard
-            let matchRange = (x?.rangeAt(0)).flatMap({ sourceKit.range(from: $0) }),
-            let group = (x?.rangeAt(1)).flatMap({ sourceKit.substring(with: $0) })
+            let matchRange = (x?.range(at: 0)).flatMap({ Range($0, in: sourceKit) }),
+            let group = (x?.range(at: 1)).flatMap({ Range($0, in: sourceKit) }).flatMap({ String(sourceKit[$0]) })
         else {
             return
         }
