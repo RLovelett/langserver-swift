@@ -26,23 +26,20 @@ fileprivate let regex = try! NSRegularExpression(pattern: "<#T##([^#]+)#(?:#[^#]
 /// - Returns: A `String` where any SourceKit style snippets have been converted to TextMate
 /// snippets.
 func convert(_ sourceKit: String) -> Decoded<String> {
-    var result = ""
-    var lastRange = sourceKit.startIndex..<sourceKit.startIndex
-    var cursorIndex = 0
-    let range = NSRange(sourceKit.startIndex..., in: sourceKit)
-    regex.enumerateMatches(in: sourceKit, options: [], range: range) { (x: NSTextCheckingResult?, _, _) -> Void in
+    let matches = regex.matches(in: sourceKit, options: [], range: NSRange(sourceKit.startIndex..., in: sourceKit))
+    var result = matches.enumerated().reduce(into: ("", sourceKit.startIndex)) { (previous: inout (String, String.Index), next: (offset: Int, element: NSTextCheckingResult)) in
         guard
-            let matchRange = (x?.range(at: 0)).flatMap({ Range($0, in: sourceKit) }),
-            let group = (x?.range(at: 1)).flatMap({ Range($0, in: sourceKit) }).flatMap({ String(sourceKit[$0]) })
+            let matchRange = Range(next.element.range(at: 0), in: sourceKit),
+            let groupRange = Range(next.element.range(at: 1), in: sourceKit)
         else {
             return
         }
-        cursorIndex += 1
-        let leading = lastRange.upperBound..<matchRange.lowerBound
-        result += sourceKit.substring(with: leading)
-        result += "{{\(cursorIndex):\(group)}}"
-        lastRange = matchRange
+        let group = sourceKit[groupRange]
+        let cursorIndex = next.offset + 1
+        previous.0 += sourceKit[previous.1..<matchRange.lowerBound]
+        previous.0 += "{{\(cursorIndex):\(group)}}"
+        previous.1 = matchRange.upperBound
     }
-    result += sourceKit[lastRange.upperBound...]
-    return pure(result)
+    result.0 += sourceKit[result.1...]
+    return pure(result.0)
 }
