@@ -23,7 +23,7 @@ struct TextDocumentRange {
 
 }
 
-extension TextDocumentRange : Decodable {
+extension TextDocumentRange : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<TextDocumentRange> {
         let start: Decoded<Position> = json <| "start"
@@ -33,7 +33,7 @@ extension TextDocumentRange : Decodable {
 
 }
 
-extension TextDocumentRange : Encodable {
+extension TextDocumentRange : Ogra.Encodable {
 
     public func encode() -> JSON {
         return JSON.object([

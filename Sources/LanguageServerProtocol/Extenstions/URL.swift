@@ -37,7 +37,7 @@ extension URL : TextDocumentIdentifier {
 
 }
 
-extension URL : Decodable {
+extension URL : Argo.Decodable {
 
     /// Convert a `JSON.string` case into a `URL`.
     ///

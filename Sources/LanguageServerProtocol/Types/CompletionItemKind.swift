@@ -63,7 +63,7 @@ public enum CompletionItemKind : Int {
     }
 }
 
-extension CompletionItemKind : Decodable {
+extension CompletionItemKind : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<CompletionItemKind> {
         switch json {

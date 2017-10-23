@@ -33,7 +33,7 @@ public struct Hover {
 
 }
 
-extension Hover : Encodable {
+extension Hover : Ogra.Encodable {
 
     public func encode() -> JSON {
         var obj = [

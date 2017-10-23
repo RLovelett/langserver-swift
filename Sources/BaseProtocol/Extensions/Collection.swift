@@ -9,7 +9,7 @@
 import Argo
 import Ogra
 
-public extension Collection where Iterator.Element: Encodable {
+public extension Collection where Iterator.Element: Ogra.Encodable {
 
     func encode() -> JSON {
         let arr = self.map({ $0.encode() })

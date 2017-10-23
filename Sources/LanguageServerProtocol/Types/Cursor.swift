@@ -46,7 +46,7 @@ struct Cursor {
 
 }
 
-extension Cursor : Decodable {
+extension Cursor : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<Cursor> {
         return curry(Cursor.init)
@@ -63,7 +63,7 @@ extension Cursor : Decodable {
 
 }
 
-extension Cursor.DefinitionLocation : Decodable {
+extension Cursor.DefinitionLocation : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<Cursor.DefinitionLocation> {
         let filepath: String? = (json <| "key.filepath").value
