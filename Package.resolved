@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/RLovelett/swift-package-manager.git",
         "state": {
           "branch": null,
-          "revision": "ac67d99d1481b29fdb12e5c58c9b3c5c4b125eb2",
-          "version": "4.0.0-beta.1"
+          "revision": "73028ae4302ba0fa8a6862a8fc8ebd2dc205b151",
+          "version": "4.0.0-beta.2"
         }
       }
     ]
