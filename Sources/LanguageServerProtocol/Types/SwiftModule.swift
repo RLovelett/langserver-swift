@@ -7,9 +7,22 @@
 //
 
 import Argo
+import enum Build.TargetDescription
 import Curry
 import Foundation
+import class PackageModel.ResolvedTarget
 import Runes
+
+private extension TargetDescription {
+    var arguments: [String] {
+        switch self {
+        case .clang(let c):
+            return c.basicArguments()
+        case .swift(let s):
+            return s.compileArguments()
+        }
+    }
+}
 
 /// A module, typically defined and managed by [SwiftPM](), that manages the sources and the compiler arguments
 /// that should be sent to SourceKit.
@@ -44,20 +57,21 @@ struct SwiftModule {
         otherArguments = []
     }
 
-//    /// Create a module from the definition provided by SwiftPM.
-//    ///
-//    /// - Parameters:
-//    ///   - moduleName: The name of the Swift module.
-//    ///   - locations: An array of file paths on the local file system where the sources of the module are found.
-//    ///   - arguments: An array of arguments used to compile the module.
-//    init(module: Module, commands: [Build.Command]) {
-//        name = module.name
-//        sources = Dictionary(module.sources.paths
-//            .map { URL(fileURLWithPath: $0.asString) }
-//            .flatMap(TextDocument.init)
-//            .map({ (key: $0.uri, value: $0) }))
-//        otherArguments = commands.flatMap({ $0.tool.otherArguments })
-//    }
+    /// Create a module from the definition provided by SwiftPM.
+    ///
+    /// - Parameters:
+    ///   - moduleName: The name of the Swift module.
+    ///   - locations: An array of file paths on the local file system where the sources of the module are found.
+    ///   - arguments: An array of arguments used to compile the module.
+    init(target: ResolvedTarget, description: TargetDescription) {
+        name = target.name
+        let dict = target.sources.paths.lazy
+            .map { URL(fileURLWithPath: $0.asString) }
+            .flatMap(TextDocument.init)
+            .map { (key: $0.uri, value: $0) }
+        sources = Dictionary(dict)
+        otherArguments = description.arguments
+    }
 
     var root: URL {
         return commonRoot(sources.keys)

@@ -9,10 +9,14 @@
 import Argo
 import struct Basic.AbsolutePath
 import class Basic.DiagnosticsEngine
+import struct Build.BuildParameters
+import class Build.BuildPlan
+import enum Build.TargetDescription
 import Commands
 import Foundation
 import os.log
 import class PackageLoading.ManifestLoader
+import class PackageModel.ResolvedTarget
 import SourceKitter
 import struct Utility.BuildFlags
 import class Workspace.Workspace
@@ -57,11 +61,11 @@ public class Server {
         let root = WorkspaceRoot(packages: [path])
         let engine = DiagnosticsEngine()
         let pg = ws.loadPackageGraph(root: root, diagnostics: engine)
-//        let buildFlags = BuildFlags()
+        let buildFlags = BuildFlags()
+        let parameters = BuildParameters(dataPath: buildPath, configuration: .debug, toolchain: toolchain, flags: buildFlags)
+        let plan = try! BuildPlan(buildParameters: parameters, graph: pg)
+        modules = Set(plan.targetMap.map { SwiftModule(target: $0.key, description: $0.value) })
         sourceKitSession = SourceKit.Session()
-//        modules = Set(example(buildPath, .debug, pg, flags: buildFlags, toolchain: toolchain)
-//            .map({ SwiftModule(module: $0.0, commands: $0.1) }))
-        modules = []
     }
 
     /// A description to the client of the types of services this language server provides.
