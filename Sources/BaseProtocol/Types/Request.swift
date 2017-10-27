@@ -104,7 +104,7 @@ public enum Request {
         }
     }
 
-    public func parse<T: Decodable>() throws -> T where T.DecodedType == T {
+    public func parse<T: Argo.Decodable>() throws -> T where T.DecodedType == T {
         switch T.decode(params) {
         case .success(let p):
             return p
@@ -114,7 +114,7 @@ public enum Request {
     }
 }
 
-extension Request.Identifier : Decodable {
+extension Request.Identifier : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<Request.Identifier> {
         switch json {

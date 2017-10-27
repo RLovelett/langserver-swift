@@ -21,7 +21,7 @@ public struct InitializeResult {
 
 }
 
-extension InitializeResult : Encodable {
+extension InitializeResult : Ogra.Encodable {
 
     public func encode() -> JSON {
         return JSON.object([

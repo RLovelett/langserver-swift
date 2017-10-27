@@ -22,4 +22,4 @@ enum FileChangeType: Int {
 
 }
 
-extension FileChangeType : Decodable { }
+extension FileChangeType : Argo.Decodable { }

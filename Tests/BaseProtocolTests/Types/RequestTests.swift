@@ -12,7 +12,7 @@ import Curry
 import Runes
 import XCTest
 
-private struct ArrayParams : Decodable {
+private struct ArrayParams : Argo.Decodable {
 
     let x: [Int]
 

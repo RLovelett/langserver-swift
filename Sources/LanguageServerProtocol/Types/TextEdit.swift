@@ -25,7 +25,7 @@ struct TextEdit {
 
 }
 
-extension TextEdit : Encodable {
+extension TextEdit : Ogra.Encodable {
 
     func encode() -> JSON {
         return JSON.null
