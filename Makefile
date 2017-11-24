@@ -1,6 +1,6 @@
 DefaultBuildFlags=-Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
 DebugBuildFlags=$(DefaultBuildFlags)
-ReleaseBuildFlags=$(DefaultBuildFlags) -c release
+ReleaseBuildFlags=$(DefaultBuildFlags) -Xswiftc -static-stdlib -c release
 INSTALL_PATH?=/usr/local
 
 .PHONY: debug
@@ -22,13 +22,11 @@ clean:
 ## Install the release version of the package
 install: release
 	cp -f .build/release/langserver-swift $(INSTALL_PATH)/bin/langserver-swift
-	cp -f .build/x86_64-apple-macosx10.10/release/libSwiftPM.dylib $(INSTALL_PATH)/lib/libSwiftPM.dylib
 
 .PHONY: uninstall
 ## Undo the effects of install
 uninstall:
 	rm -r $(INSTALL_PATH)/bin/langserver-swift
-	rm -r $(INSTALL_PATH)/lib/libSwiftPM.dylib
 
 .PHONY: test
 ## Build and run the tests
