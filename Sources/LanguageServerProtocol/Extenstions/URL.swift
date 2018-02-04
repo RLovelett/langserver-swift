@@ -48,7 +48,7 @@ extension URL : Argo.Decodable {
     public static func decode(_ json: JSON) -> Decoded<URL> {
         switch json {
         case .string(let uri):
-            let isDirectory = (uri as NSString).pathExtension.isEmpty
+            let isDirectory = NSString(string: uri).pathExtension.isEmpty
             // Bar is here to handle a URI prefixed with a `file://` scheme
             // e.g., file:///Users/ryan/Source/langserver-swift/Fixtures/ValidLayouts/Simple/Sources/main.swift
             // and
