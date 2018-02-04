@@ -8,11 +8,15 @@
 
 import Argo
 import Foundation
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 import os.log
+#endif
 import SourceKit
 
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 @available(macOS 10.12, *)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "SourceKit")
+#endif
 
 /// Provides a convience wrapper to safely make calls to SourceKit.
 public final class SourceKit {
@@ -87,6 +91,7 @@ public final class SourceKit {
     ///
     /// - Returns: A monad that contains the response from SourceKit.
     public func request() -> Decoded<JSON> {
+        #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
         if #available(macOS 10.12, *) {
             let descPtr = obj.flatMap { sourcekitd_request_description_copy($0) }
             let description = descPtr
@@ -94,6 +99,7 @@ public final class SourceKit {
                 .flatMap({ String(bytesNoCopy: $0.0, length: $0.1, encoding: .utf8, freeWhenDone: true) })!
             os_log("%{public}@", log: log, type: .default, description)
         }
+        #endif
 
         let response = sourcekitd_send_request_sync(obj!)!
         defer {

@@ -9,13 +9,17 @@
 import Argo
 import Foundation
 import Ogra
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 import os.log
+#endif
 
 fileprivate let headerSeparator = "\r\n"
 fileprivate let headerTerminator = "\r\n\r\n"
 fileprivate let pattern = headerTerminator.data(using: .utf8)!
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 @available(macOS 10.12, *)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Response")
+#endif
 
 public struct Response {
 
@@ -90,9 +94,11 @@ public struct Response {
         headerData?.append(jsonData)
 
         let response = headerData ?? pattern
+        #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
         if #available(macOS 10.12, *), let msg = String(bytes: response, encoding: .utf8) {
             os_log("%{public}@", log: log, type: .default, msg)
         }
+        #endif
         return response
     }
 
