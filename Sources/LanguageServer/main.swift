@@ -3,6 +3,14 @@ import Dispatch
 import Foundation
 import LanguageServerProtocol
 
+extension Data {
+  init(copy: DispatchData) {
+    self = copy.withUnsafeBytes { (ptr: UnsafePointer<CChar>) -> Data in
+      return Data(bytes: ptr, count: copy.count)
+    }
+  }
+}
+
 private let header: [String : String] = [
     "Content-Type": "application/vscode-jsonrpc; charset=utf8"
 ]
@@ -17,26 +25,24 @@ let channel = DispatchIO(type: .stream, fileDescriptor: stdin.fileDescriptor, qu
 // The desire is to trigger the handler block as soon as there is any data in the channel.
 channel.setLimit(lowWater: 1)
 
-channel.read(offset: 0, length: Int.max, queue: .main) { (end, _, error) in
-  let buffer = stdin.availableData
+channel.read(offset: 0, length: Int.max, queue: .main) { (end, possibleData, error) in
+  guard !end else {
+    exit(0)
+  }
 
-  guard !buffer.isEmpty else {
+  guard let data = possibleData, !data.isEmpty else {
     return
   }
 
+  FileHandle.standardError.write("Here".data(using: .utf8)!)
+
+  let buffer = Data(copy: data)
   requests.append(buffer)
 
   for requestBuffer in requests {
     do {
       let request = try Request(requestBuffer)
-      let response = handle(request)
-      /// If the request id is null then it is a notification and not a request
-      switch request {
-      case .request(_, _, _):
-        let toSend = response.data(header)
-        FileHandle.standardOutput.write(toSend)
-      default: ()
-      }
+      // dump(request)
     } catch let error as PredefinedError {
       fatalError(error.description)
     } catch {
