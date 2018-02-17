@@ -42,7 +42,14 @@ channel.read(offset: 0, length: Int.max, queue: .main) { (end, possibleData, err
   for requestBuffer in requests {
     do {
       let request = try Request(requestBuffer)
-      // dump(request)
+      let response = handle(request)
+      /// If the request id is null then it is a notification and not a request
+      switch request {
+      case .request(_, _, _):
+        let toSend = response.data(header)
+        FileHandle.standardOutput.write(toSend)
+      default: ()
+      }
     } catch let error as PredefinedError {
       fatalError(error.description)
     } catch {
