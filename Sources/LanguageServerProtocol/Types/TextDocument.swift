@@ -29,9 +29,6 @@ struct TextDocument : TextDocumentItem {
     /// The content of the opened text document.
     let text: String
 
-    /// A collection of Ranges that denote the different byte position of lines in a document.
-    let lines: LineCollection
-
 }
 
 extension TextDocument {
@@ -40,28 +37,13 @@ extension TextDocument {
     ///
     /// - Parameter file: The file, on the local file system, that should be read.
     init?(_ file: URL) {
+        guard let contents = try? String(contentsOf: file, encoding: .utf8) else {
+            return nil
+        }
         uri = file
         languageId = "swift"
         version = Int.min
-        text = ""
-        guard let lines = try? LineCollection(for: file) else { return nil }
-        self.lines = lines
-    }
-
-    /// Create a text document instance from information sent by the client.
-    ///
-    /// - Parameters:
-    ///   - uri: The source file's fully qualified path on the filesystem.
-    ///   - languageId: The text document's language identifier, typically `"swift"`.
-    ///   - version: The version number of this document.
-    ///   - text: The content of the opened text document.
-    fileprivate init(uri: URL, languageId: String, version: Int, text: String) {
-        self.uri = uri
-        self.languageId = languageId
-        self.version = version
-        self.text = text
-        // TODO: Force cast 🤢
-        self.lines = LineCollection(for: text)!
+        text = contents
     }
 
     /// Create a new instance from the current instance, whild changing the version and text.
@@ -72,6 +54,57 @@ extension TextDocument {
     /// - Returns: A new copy of the current text document with the changed parameters.
     func update(version: Int, andText: String) -> TextDocument {
         return TextDocument(uri: uri, languageId: languageId, version: version, text: andText)
+    }
+
+    /// Converts the position to a zero-based byte offset in the TextDocument.
+    ///
+    /// - Parameter position: The position to convert.
+    /// - Returns: The byte offset from the TextDocument start index.
+    /// - Throws: WorkspaceError.positionNotFound if the Position is not within the bounds of the TextDocument.
+    func byteOffset(at position: Position) throws -> Int {
+        let seq = AnySequence { LineIterator(self.text) }
+        guard let line = seq.first(where: { $0.number == position.line }) else {
+            throw WorkspaceError.positionNotFound
+        }
+        let limit = (line.last) ? text.endIndex : text.index(before: line.end)
+        guard let final = text.index(line.start, offsetBy: position.character, limitedBy: limit) else {
+            throw WorkspaceError.positionNotFound
+        }
+        return text.distance(from: text.startIndex, to: final)
+    }
+
+    /// Create a Position in a TextDocument from a byte offset.
+    ///
+    /// - Parameter offset: The offset from the start of the TextDocument.
+    /// - Returns: A new and valid Position.
+    /// - Throws: WorkspaceError.positionNotFound if the offset is not within the bounds of the TextDocument.
+    func position(for offset: Int) throws -> Position {
+        guard offset >= 0 else {
+            throw WorkspaceError.positionNotFound
+        }
+        guard let index = text.index(text.startIndex, offsetBy: offset, limitedBy: text.endIndex) else {
+            throw WorkspaceError.positionNotFound
+        }
+        let seq = AnySequence { LineIterator(self.text) }
+        guard let line = seq.first(where: { $0.contains(index) }) else {
+            throw WorkspaceError.positionNotFound
+        }
+        let character = text.distance(from: line.start, to: index)
+        return Position(line: line.number, character: character)
+    }
+
+    /// Create a TextDocumentRange in a TextDocument from a byte offset and number of bytes.
+    ///
+    /// - Parameters:
+    ///   - offset: The offset from the start of the TextDocument.
+    ///   - length: The number of bytes from the offset to include in the range.
+    /// - Returns: A new and valid TextDocumentRange.
+    /// - Throws: WorkspaceError.positionNotFound if the range is not within the bounds of the TextDocument.
+    func selection(startAt offset: Int, length: Int) throws -> TextDocumentRange {
+        let endOffset = Int(offset + length)
+        let start = try position(for: offset)
+        let end = try position(for: endOffset)
+        return TextDocumentRange(start: start, end: end)
     }
 
 }

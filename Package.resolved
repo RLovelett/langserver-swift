@@ -5,9 +5,9 @@
         "package": "AEXML",
         "repositoryURL": "https://github.com/tadija/AEXML.git",
         "state": {
-          "branch": "master",
+          "branch": null,
           "revision": "6eea665515d079c338690147082a8084a36484b0",
-          "version": null
+          "version": "4.3.0"
         }
       },
       {

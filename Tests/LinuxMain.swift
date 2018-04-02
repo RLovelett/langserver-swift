@@ -5,7 +5,7 @@
 //  LinuxMain.swift
 //  Tests
 //
-//  Created by Sourcery on 2018-05-27T21:24:16-0400.
+//  Created by Sourcery on 2018-05-30T17:17:03-0400.
 //  sourcery --sources Tests --templates sourcery --output Tests --args testimports='@testable import BaseProtocolTests
 //  @testable import LanguageServerProtocolTests'
 //
@@ -45,11 +45,13 @@ extension HeaderTests {
     ("testHeaderWithMultipleFields", testHeaderWithMultipleFields)
   ]
 }
-extension LineCollectionTests {
-  static var allTests: [(String, (LineCollectionTests) -> () throws -> Void)] = [
-    ("testOffsetCalculation", testOffsetCalculation),
-    ("testPositionCalculation", testPositionCalculation),
-    ("testSourceWithoutTrailingNewLine", testSourceWithoutTrailingNewLine)
+extension LineIteratorTests {
+  static var allTests: [(String, (LineIteratorTests) -> () throws -> Void)] = [
+    ("testCountLines", testCountLines),
+    ("testLineLayoutSimpleMain", testLineLayoutSimpleMain),
+    ("testLineLayoutSimpleBar", testLineLayoutSimpleBar),
+    ("testLineContainsIndex", testLineContainsIndex),
+    ("testLastLine", testLastLine)
   ]
 }
 extension RequestIteratorTests {
@@ -81,10 +83,12 @@ extension SwiftModuleTests {
   static var allTests: [(String, (SwiftModuleTests) -> () throws -> Void)] = [
   ]
 }
-extension SwiftSourceTests {
-  static var allTests: [(String, (SwiftSourceTests) -> () throws -> Void)] = [
-    ("testFindDefintion", testFindDefintion),
-    ("testTwo", testTwo)
+extension TextDocumentTests {
+  static var allTests: [(String, (TextDocumentTests) -> () throws -> Void)] = [
+    ("testCompleteInner", testCompleteInner),
+    ("testCusorGetter", testCusorGetter),
+    ("testSimpleBar", testSimpleBar),
+    ("testSimpleMain", testSimpleMain)
   ]
 }
 extension URLTests {
@@ -106,12 +110,12 @@ XCTMain([
   testCase(CursorTests.allTests),
   testCase(DidChangeWatchedFilesParamsTests.allTests),
   testCase(HeaderTests.allTests),
-  testCase(LineCollectionTests.allTests),
+  testCase(LineIteratorTests.allTests),
   testCase(RequestIteratorTests.allTests),
   testCase(RequestTests.allTests),
   testCase(ResponseTests.allTests),
   testCase(SwiftModuleTests.allTests),
-  testCase(SwiftSourceTests.allTests),
+  testCase(TextDocumentTests.allTests),
   testCase(URLTests.allTests),
   testCase(WorkspaceTests.allTests),
 ])

@@ -42,10 +42,10 @@ let package = Package(
         .target(
             name: "LanguageServerProtocol",
             dependencies: [
+                "AEXML",
                 "BaseProtocol",
                 "SourceKitter",
-                "SwiftPM",
-                "AEXML",
+                "SwiftPM"
             ]
         ),
         .target(
