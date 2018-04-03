@@ -14,7 +14,7 @@ extension String : SourceKitRequestable {
         return FileManager.default.fileExists(atPath: self)
     }
 
-    var sourceKitObject: sourcekitd_object_t {
+    var sourceKitObject: sourcekitd_object_t? {
         return sourcekitd_request_string_create(self)
     }
 }

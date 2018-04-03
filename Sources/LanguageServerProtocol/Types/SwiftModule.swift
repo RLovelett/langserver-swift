@@ -56,7 +56,7 @@ struct SwiftModule {
         let s = WorkspaceSequence(root: directory).lazy
             .filter({ $0.isFileURL && $0.isFile })
             .filter({ $0.pathExtension.lowercased() == "swift" }) // Check if file is a Swift source file (e.g., has `.swift` extension)
-            .flatMap(TextDocument.init)
+            .compactMap(TextDocument.init)
             .map({ (key: $0.uri, value: $0) })
         sources = Dictionary(s)
         otherArguments = []

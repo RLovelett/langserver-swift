@@ -3,7 +3,7 @@
 ![macOS](https://img.shields.io/badge/os-macOS-green.svg?style=flat)
 ![Linux](https://img.shields.io/badge/os-linux-green.svg?style=flat)
 ![Apache 2](https://img.shields.io/badge/license-Apache2-blue.svg?style=flat)
-![](https://img.shields.io/badge/Swift-4.0.0-orange.svg?style=flat)
+![](https://img.shields.io/badge/Swift-4.1.0-orange.svg?style=flat)
 [![Build Status](https://travis-ci.org/RLovelett/langserver-swift.svg?branch=master)](https://travis-ci.org/RLovelett/langserver-swift)
 [![Join the chat at https://gitter.im/langserver-swift](https://badges.gitter.im/langserver-swift/Lobby.svg)](https://gitter.im/langserver-swift?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -17,13 +17,12 @@ Currently this implementation is used by [Swift for Visual Studio Code](https://
 
 ## Swift
 
-* Swift version 4.0.0
-* The toolchain that comes with Xcode Version 9.0 (9A235) (`Apple Swift version 4.0 (swiftlang-900.0.65.2 clang-900.0.37)`)
+* Swift version 4.1.0
+* The toolchain that comes with Xcode Version 9.3 (9E145) (`Apple Swift version 4.1 (swiftlang-902.0.48 clang-902.0.37.1)`)
 
 ## macOS
 
 * macOS 10.12 (*Sierra*) or higher
-* Xcode Version 9.0 (9A235) or higher using one of the above toolchains (*Recommended*)
 
 ## Linux
 

@@ -16,12 +16,12 @@ import enum Build.TargetDescription
 import Commands
 import Foundation
 import os.log
+import struct PackageGraph.PackageGraphRootInput
 import class PackageLoading.ManifestLoader
 import class PackageModel.ResolvedTarget
 import SourceKitter
 import struct Utility.BuildFlags
 import class Workspace.Workspace
-import struct Workspace.WorkspaceRoot
 
 @available(macOS 10.12, *)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
@@ -76,7 +76,7 @@ public class Server {
         let manifestLoader = ManifestLoader(resources: toolchain.manifestResources)
         let delegate = ToolWorkspaceDelegate()
         let ws = Workspace(dataPath: buildPath, editablesPath: edit, pinsFile: pins, manifestLoader: manifestLoader, delegate: delegate)
-        let root = WorkspaceRoot(packages: [path])
+        let root = PackageGraphRootInput(packages: [path])
         let engine = DiagnosticsEngine()
         let pg = ws.loadPackageGraph(root: root, diagnostics: engine)
         let buildFlags = BuildFlags()
@@ -212,7 +212,7 @@ public class Server {
             return Hover(contents: [""], range: .none)
         }
 
-        let contents = [c.annotatedDeclaration, c.fullyAnnotatedDeclaration, c.documentationAsXML].flatMap({ $0 })
+        let contents = [c.annotatedDeclaration, c.fullyAnnotatedDeclaration, c.documentationAsXML].compactMap { $0 }
 
         switch c.defined {
         case let .local(filepath, symbolOffset, symbolLength):

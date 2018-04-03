@@ -9,5 +9,5 @@
 import SourceKit
 
 protocol SourceKitRequestable {
-    var sourceKitObject: sourcekitd_object_t { get }
+    var sourceKitObject: sourcekitd_object_t? { get }
 }

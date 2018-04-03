@@ -8,9 +8,9 @@
 
 import SourceKit
 
-extension Array where Element == String {
-    var sourceKit: sourcekitd_object_t {
-        var requestStrings = self.map({ sourcekitd_request_string_create($0) })
-        return sourcekitd_request_array_create(&requestStrings, self.count)
+extension Array where Element: SourceKitRequestable {
+    var sourceKit: sourcekitd_object_t? {
+        var request = self.map { $0.sourceKitObject }
+        return sourcekitd_request_array_create(&request, request.count)
     }
 }

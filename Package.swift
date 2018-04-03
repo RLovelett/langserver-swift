@@ -19,9 +19,9 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/RLovelett/SourceKit.git", from: "1.0.0"),
         .package(url: "https://github.com/thoughtbot/Argo.git", from: "4.1.2"),
-        .package(url: "https://github.com/edwardaux/Ogra.git", from: "4.1.2"),
+        .package(url: "https://github.com/RLovelett/Ogra.git", .branch("master")),
         .package(url: "https://github.com/thoughtbot/Curry.git", from: "3.0.0"),
-        .package(url: "https://github.com/RLovelett/swift-package-manager.git", .exact("4.0.0-rc.1")),
+        .package(url: "https://github.com/RLovelett/swift-package-manager.git", .branch("swift-4.1-branch")),
     ],
     targets: [
         .target(

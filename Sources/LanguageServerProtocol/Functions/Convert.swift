@@ -38,8 +38,7 @@ func convert(_ sourceKit: String) -> Decoded<String> {
             return
         }
         cursorIndex += 1
-        let leading = lastRange.upperBound..<matchRange.lowerBound
-        result += sourceKit.substring(with: leading)
+        result += sourceKit[lastRange.upperBound..<matchRange.lowerBound]
         result += "{{\(cursorIndex):\(group)}}"
         lastRange = matchRange
     }

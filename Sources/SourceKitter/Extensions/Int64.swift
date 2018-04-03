@@ -9,7 +9,7 @@
 import SourceKit
 
 extension Int64 : SourceKitRequestable {
-    var sourceKitObject: sourcekitd_object_t {
+    var sourceKitObject: sourcekitd_object_t? {
         return sourcekitd_request_int64_create(self)
     }
 }

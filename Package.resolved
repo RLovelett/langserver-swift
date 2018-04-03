@@ -21,11 +21,11 @@
       },
       {
         "package": "Ogra",
-        "repositoryURL": "https://github.com/edwardaux/Ogra.git",
+        "repositoryURL": "https://github.com/RLovelett/Ogra.git",
         "state": {
-          "branch": null,
-          "revision": "b4f180291873ef4121d215c7298690c94e96bcf6",
-          "version": "4.1.2"
+          "branch": "master",
+          "revision": "2557450baad23d299fd4d90ba5f0b16e36203040",
+          "version": null
         }
       },
       {
@@ -50,9 +50,9 @@
         "package": "SwiftPM",
         "repositoryURL": "https://github.com/RLovelett/swift-package-manager.git",
         "state": {
-          "branch": null,
-          "revision": "38defaa2a2fb39f6b0b01c52d24e5e0bfc0b6d97",
-          "version": "4.0.0-rc.1"
+          "branch": "swift-4.1-branch",
+          "revision": "717de5e5a534e50fe176a510d7502b63b4901678",
+          "version": null
         }
       }
     ]

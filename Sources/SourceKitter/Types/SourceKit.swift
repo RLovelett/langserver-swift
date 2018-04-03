@@ -54,33 +54,33 @@ public final class SourceKit {
             self.value = value
         }
 
-        var key: sourcekitd_uid_t {
+        var key: sourcekitd_uid_t? {
             return sourcekitd_uid_get_from_cstr(uid)
         }
 
-        var obj: sourcekitd_object_t {
+        var obj: sourcekitd_object_t? {
             return value.sourceKitObject
         }
 
     }
 
-    private let obj: sourcekitd_object_t
+    private let obj: sourcekitd_object_t?
 
     /// Create a SourceKit request object from the options and build arguments provided.
     ///
     /// - Parameters:
     ///   - options: A dictionary containing the key value pairs of options to be sent with a request.
     ///   - args: The build arguments array.
-    private init(_ options: [sourcekitd_uid_t : sourcekitd_object_t], _ args: [String]) {
+    private init(_ options: [sourcekitd_uid_t? : sourcekitd_object_t?], _ args: [String]) {
         var dict = options
         dict[sourcekitd_uid_get_from_cstr("key.compilerargs")] = args.sourceKit
-        var keys: [sourcekitd_uid_t?] = Array(dict.keys).flatMap{ $0 as sourcekitd_uid_t? }
-        var values: [sourcekitd_object_t?] = Array(dict.values).flatMap { $0 as sourcekitd_object_t? }
+        var keys = Array(dict.keys)
+        var values = Array(dict.values)
         obj = sourcekitd_request_dictionary_create(&keys, &values, dict.count)
     }
 
     deinit {
-        sourcekitd_request_release(obj)
+        obj.map { sourcekitd_request_release($0) }
     }
 
     /// Issue the request to SourceKit and parse the response into JSON.
@@ -88,14 +88,14 @@ public final class SourceKit {
     /// - Returns: A monad that contains the response from SourceKit.
     public func request() -> Decoded<JSON> {
         if #available(macOS 10.12, *) {
-            let descPtr = sourcekitd_request_description_copy(obj)
+            let descPtr = obj.flatMap { sourcekitd_request_description_copy($0) }
             let description = descPtr
                 .map({ (UnsafeMutableRawPointer($0), Int(strlen($0))) })
                 .flatMap({ String(bytesNoCopy: $0.0, length: $0.1, encoding: .utf8, freeWhenDone: true) })!
             os_log("%{public}@", log: log, type: .default, description)
         }
 
-        let response = sourcekitd_send_request_sync(obj)!
+        let response = sourcekitd_send_request_sync(obj!)!
         defer {
             sourcekitd_response_dispose(response)
         }
@@ -138,7 +138,7 @@ public final class SourceKit {
         let sourceText = SourceKit.Option(uid: "key.sourcetext", value: text)
         let sourceFile = SourceKit.Option(uid: "key.sourcefile", value: file)
         let offset = SourceKit.Option(uid: "key.offset", value: offset)
-        let options: [sourcekitd_uid_t : sourcekitd_object_t] = [
+        let options: [sourcekitd_uid_t? : sourcekitd_object_t?] = [
             request.key: request.obj,
             sourceText.key: sourceText.obj,
             sourceFile.key: sourceFile.obj,
@@ -167,7 +167,7 @@ public final class SourceKit {
         let sourceText = SourceKit.Option(uid: "key.sourcetext", value: text)
         let sourceFile = SourceKit.Option(uid: "key.sourcefile", value: file)
         let offset = SourceKit.Option(uid: "key.offset", value: offset)
-        let options: [sourcekitd_uid_t : sourcekitd_object_t] = [
+        let options: [sourcekitd_uid_t? : sourcekitd_object_t?] = [
             request.key: request.obj,
             sourceText.key: sourceText.obj,
             sourceFile.key: sourceFile.obj,

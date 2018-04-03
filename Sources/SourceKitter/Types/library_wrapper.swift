@@ -36,16 +36,21 @@ struct DynamicLinkLibrary {
     let handle: UnsafeMutableRawPointer
 
     func load<T>(symbol: String) -> T {
-        guard let sym = dlsym(handle, symbol) else {
-            let errorString = String(validatingUTF8: dlerror()) ?? "DynamicLinkLibrary Unknown Error"
-            fatalError("Finding symbl \(symbol) failed: \(errorString)")
+        if let sym = dlsym(handle, symbol) {
+            return unsafeBitCast(sym, to: T.self)
         }
-        return unsafeBitCast(sym, to: T.self)
+        let errorString = String(validatingUTF8: dlerror())
+        fatalError("Finding symbol \(symbol) failed: \(errorString ?? "unknown error")")
     }
 }
 
 #if os(Linux)
-let toolchainLoader = Loader(searchPaths: [linuxSourceKitLibPath])
+let toolchainLoader = Loader(searchPaths: [
+    linuxSourceKitLibPath,
+    linuxFindSwiftenvActiveLibPath,
+    linuxFindSwiftInstallationLibPath,
+    linuxDefaultLibPath
+].compactMap({ $0 }))
 #else
 let toolchainLoader = Loader(searchPaths: [
     xcodeDefaultToolchainOverride,
@@ -58,8 +63,8 @@ let toolchainLoader = Loader(searchPaths: [
     applicationsDir?.xcodeDeveloperDir.toolchainDir,
     applicationsDir?.xcodeBetaDeveloperDir.toolchainDir,
     userApplicationsDir?.xcodeDeveloperDir.toolchainDir,
-    userApplicationsDir?.xcodeBetaDeveloperDir.toolchainDir,
-].flatMap { path in
+    userApplicationsDir?.xcodeBetaDeveloperDir.toolchainDir
+].compactMap { path in
     if let fullPath = path?.usrLibDir, fullPath.isFile {
         return fullPath
     }
@@ -89,9 +94,70 @@ private func env(_ name: String) -> String? {
     return ProcessInfo.processInfo.environment[name]
 }
 
-/// Returns "LINUX_SOURCEKIT_LIB_PATH" environment variable,
-/// or "/usr/lib" if unspecified.
-internal let linuxSourceKitLibPath = env("LINUX_SOURCEKIT_LIB_PATH") ?? "/usr/lib"
+/// Run a process at the given (absolute) path, capture output, return outupt.
+private func runCommand(_ path: String, _ args: String...) -> String? {
+    let process = Process()
+    process.launchPath = path
+    process.arguments = args
+
+    let pipe = Pipe()
+    process.standardOutput = pipe
+    process.launch()
+
+    let data = pipe.fileHandleForReading.readDataToEndOfFile()
+    process.waitUntilExit()
+    guard let encoded = String(data: data, encoding: String.Encoding.utf8) else {
+        return nil
+    }
+
+    let trimmed = encoded.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+    if trimmed.isEmpty {
+        return nil
+    }
+    return trimmed
+}
+
+/// Returns "LINUX_SOURCEKIT_LIB_PATH" environment variable.
+internal let linuxSourceKitLibPath = env("LINUX_SOURCEKIT_LIB_PATH")
+
+/// If available, uses `swiftenv` to determine the user's active Swift root.
+internal let linuxFindSwiftenvActiveLibPath: String? = {
+    guard let swiftenvPath = runCommand("/usr/bin/which", "swiftenv") else {
+        return nil
+    }
+
+    guard let swiftenvRoot = runCommand(swiftenvPath, "prefix") else {
+        return nil
+    }
+
+    return swiftenvRoot + "/usr/lib"
+}()
+
+/// Attempts to discover the location of libsourcekitdInProc.so by looking at
+/// the `swift` binary on the path.
+internal let linuxFindSwiftInstallationLibPath: String? = {
+    guard let swiftPath = runCommand("/usr/bin/which", "swift") else {
+        return nil
+    }
+
+    if linuxSourceKitLibPath == nil && linuxFindSwiftenvActiveLibPath == nil &&
+       swiftPath.hasSuffix("/shims/swift") {
+        /// If we hit this path, the user is invoking Swift via swiftenv shims and has not set the
+        /// environment variable; this means we're going to end up trying to load from `/usr/lib`
+        /// which will fail - and instead, we can give a more useful error message.
+        fatalError("Swift is installed via swiftenv but swiftenv is not initialized.")
+    }
+
+    if !swiftPath.hasSuffix("/bin/swift") {
+        return nil
+    }
+
+    /// .../bin/swift -> .../lib
+    return swiftPath.deleting(lastPathComponents: 2) + "lib"
+}()
+
+/// Fallback path on Linux if no better option is available.
+internal let linuxDefaultLibPath = "/usr/lib"
 
 /// Returns "XCODE_DEFAULT_TOOLCHAIN_OVERRIDE" environment variable
 ///
@@ -132,7 +198,11 @@ private let xcrunFindPath: String? = {
     var end = output.startIndex
     var contentsEnd = output.startIndex
     output.getLineStart(&start, end: &end, contentsEnd: &contentsEnd, for: start..<start)
+#if swift(>=4.0)
     let xcrunFindSwiftPath = String(output[start..<contentsEnd])
+#else
+    let xcrunFindSwiftPath = output[start..<contentsEnd]
+#endif
     guard xcrunFindSwiftPath.hasSuffix("/usr/bin/swift") else {
         return nil
     }
