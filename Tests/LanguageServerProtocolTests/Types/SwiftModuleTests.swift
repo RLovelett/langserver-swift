@@ -13,3 +13,14 @@ import XCTest
 class SwiftModuleTests: XCTestCase {
 
 }
+
+#if os(Linux)
+
+extension SwiftModuleTests {
+    static var allTests: [(String, (SwiftModuleTests) -> () throws -> Void)] {
+        return [    
+        ]
+    }
+}
+
+#endif

@@ -26,3 +26,15 @@ class ResponseTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension ResponseTests {
+    static var allTests: [(String, (ResponseTests) -> () throws -> Void)] {
+        return [
+            ("testSendingErrorMessage", testSendingErrorMessage),   
+        ]
+    }
+}
+
+#endif

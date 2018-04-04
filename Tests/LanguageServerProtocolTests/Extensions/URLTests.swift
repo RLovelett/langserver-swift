@@ -57,3 +57,16 @@ class URLTests: XCTestCase {
     }
     
 }
+
+#if os(Linux)
+
+extension URLTests {
+    static var allTests: [(String, (URLTests) -> () throws -> Void)] {
+        return [
+            ("testDecodeDirectory", testDecodeDirectory),
+            ("testDecodeFile", testDecodeFile),      
+        ]
+    }
+}
+
+#endif

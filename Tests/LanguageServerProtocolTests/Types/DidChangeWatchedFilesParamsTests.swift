@@ -22,3 +22,15 @@ class DidChangeWatchedFilesParamsTests: XCTestCase {
     }
     
 }
+
+#if os(Linux)
+
+extension DidChangeWatchedFilesParamsTests {
+    static var allTests: [(String, (DidChangeWatchedFilesParamsTests) -> () throws -> Void)] {
+        return [
+            ("testCreatedFile", testCreatedFile),
+        ]
+    }
+}
+
+#endif

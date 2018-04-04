@@ -35,3 +35,16 @@ class SwiftSourceTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension SwiftSourceTests {
+    static var allTests: [(String, (SwiftSourceTests) -> () throws -> Void)] {
+        return [
+            ("testFindDefintion", testFindDefintion),
+            ("testTwo", testTwo),      
+        ]
+    }
+}
+
+#endif

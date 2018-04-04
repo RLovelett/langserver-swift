@@ -153,3 +153,25 @@ class RequestTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension RequestTests {
+    static var allTests: [(String, (RequestTests) -> () throws -> Void)] {
+        return [
+            ("testNotJSONContent", testNotJSONContent),   
+            ("testInvalidRequestJSON", testInvalidRequestJSON),   
+            ("testValidRequest", testValidRequest),
+
+            ("testInvalidHeader", testInvalidHeader),   
+            ("testValidHeaderAndRequest", testValidHeaderAndRequest),   
+            ("testParsingParameters", testParsingParameters),   
+
+            ("testParsingIncorrectParameters", testParsingIncorrectParameters),   
+            ("testShutdownRequest", testShutdownRequest),   
+            ("testTextDocumentDidOpen", testTextDocumentDidOpen),   
+        ]
+    }
+}
+
+#endif
