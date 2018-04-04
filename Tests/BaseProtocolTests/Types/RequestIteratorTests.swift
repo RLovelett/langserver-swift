@@ -65,3 +65,17 @@ class RequestIteratorTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension RequestIteratorTests {
+    static var allTests: [(String, (RequestIteratorTests) -> () throws -> Void)] {
+        return [
+            ("testIteratingMultipleRequestsAndHeaders", testIteratingMultipleRequestsAndHeaders),   
+            ("testIteratingFullAndPartialRequestsWithoutCrash", testIteratingFullAndPartialRequestsWithoutCrash),   
+            ("testIteratingByAppendingBuffers", testIteratingByAppendingBuffers),   
+        ]
+    }
+}
+
+#endif

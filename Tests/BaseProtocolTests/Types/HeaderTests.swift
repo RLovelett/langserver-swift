@@ -47,3 +47,17 @@ class HeaderTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension HeaderTests {
+    static var allTests: [(String, (HeaderTests) -> () throws -> Void)] {
+        return [
+            ("testHeaderWithNumericContentLength", testHeaderWithNumericContentLength),   
+            ("testHeaderWithoutContentLength", testHeaderWithoutContentLength),   
+            ("testHeaderWithMultipleFields", testHeaderWithMultipleFields),   
+        ]
+    }
+}
+
+#endif

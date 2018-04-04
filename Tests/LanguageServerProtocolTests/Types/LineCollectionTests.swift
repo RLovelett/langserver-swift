@@ -79,3 +79,17 @@ class LineCollectionTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension LineCollectionTests {
+    static var allTests: [(String, (LineCollectionTests) -> () throws -> Void)] {
+        return [
+            ("testOffsetCalculation", testOffsetCalculation),
+            ("testPositionCalculation", testPositionCalculation),      
+            ("testSourceWithoutTrailingNewLine", testSourceWithoutTrailingNewLine),      
+        ]
+    }
+}
+
+#endif

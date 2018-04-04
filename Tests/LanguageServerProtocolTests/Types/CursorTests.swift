@@ -46,3 +46,16 @@ class CursorTests: XCTestCase {
     }
     
 }
+
+#if os(Linux)
+
+extension CursorTests {
+    static var allTests: [(String, (CursorTests) -> () throws -> Void)] {
+        return [
+            ("testSystemSymbol", testSystemSymbol),
+            ("testModuleSymbol", testModuleSymbol),      
+        ]
+    }
+}
+
+#endif
