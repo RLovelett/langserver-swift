@@ -9,15 +9,11 @@ XCTMain([
 	*/
 
 	/// Types
-    // FIXME: Crashes the test suite
-    // testCase(HeaderTests.allTests), 
+    // FIXME: these 3 fail because of BaseProtocolTests/Resources/Fixtures.swift @loadFixture
+    testCase(HeaderTests.allTests), 
+    testCase(RequestIteratorTests.allTests),
+    testCase(RequestTests.allTests),
 
-    // FIXME: Crashes the test suite
-    // testCase(RequestIteratorTests.allTests),
-
-    // FIXME: Crashes the test suite
-    // testCase(RequestTests.allTests),
-    
     testCase(ResponseTests.allTests),
 
 	/*

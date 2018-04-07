@@ -12,19 +12,31 @@ import XCTest
 class HeaderTests: XCTestCase {
 
     func testHeaderWithNumericContentLength() {
-        let d = loadFixture("shutdown.txt", in: "JSON-RPC/Requests")!
+        guard let d = loadFixture("shutdown.txt", in: "JSON-RPC/Requests") else {
+            XCTFail("loadFixture failed")
+            return
+        }
+        
         let header = Header(d)
         XCTAssertEqual(header.contentLength, 58)
     }
 
     func testHeaderWithoutContentLength() {
-        let d = loadFixture("non-numeric-content-length.txt", in: "JSON-RPC/Requests")!
+        guard let d = loadFixture("non-numeric-content-length.txt", in: "JSON-RPC/Requests") else {
+            XCTFail("loadFixture failed")
+            return
+        }
+        
         let header = Header(d)
         XCTAssertNil(header.contentLength)
     }
 
     func testHeaderWithMultipleFields() {
-        let d = loadFixture("multiple-field-header.txt", in: "JSON-RPC/Requests")!
+        guard let d = loadFixture("multiple-field-header.txt", in: "JSON-RPC/Requests") else {
+            XCTFail("loadFixture failed")
+            return
+        }
+        
         var it = Header(d)
 
         // Content-Length: 271
