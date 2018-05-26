@@ -1,4 +1,5 @@
 import BaseProtocol
+import CSDJournal
 import Dispatch
 import Foundation
 import LanguageServerProtocol
@@ -21,6 +22,7 @@ let channel = DispatchIO(type: .stream, fileDescriptor: FileHandle.standardInput
 channel.setLimit(lowWater: 1)
 
 channel.read(offset: 0, length: Int.max, queue: readQueue) { (done, dispatchData, error) in
+    csd_journal_print(LOG_DEBUG, #file, String(#line), #function, #function)
     switch (done, dispatchData, error) {
     case (true, _, 1...):
         // If an unrecoverable error occurs on the channel’s file descriptor, the `done` parameter is set to `true` and
@@ -34,12 +36,14 @@ channel.read(offset: 0, length: Int.max, queue: readQueue) { (done, dispatchData
         requests.append(data)
         for requestBuffer in requests {
             do {
+                csd_journal_print(LOG_DEBUG, #file, String(#line), #function, String(data: requestBuffer, encoding: .utf8) ?? "Invalid String")
                 let request = try Request(requestBuffer)
                 let response = handle(request)
                 /// If the request id is null then it is a notification and not a request
                 switch request {
                 case .request(_, _, _):
                     let toSend = response.data(header)
+                    csd_journal_print(LOG_DEBUG, #file, String(#line), #function, String(data: toSend, encoding: .utf8) ?? "Invalid String")
                     // TODO: Writing to stdout should really be done on the main queue
                     FileHandle.standardOutput.write(toSend)
                 default: ()
