@@ -50,14 +50,14 @@ extension Cursor : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<Cursor> {
         return curry(Cursor.init)
-            <^> json <| "key.kind"
-            <*> json <| "key.name"
-            <*> json <| "key.usr"
-            <*> json <| "key.typename"
-            <*> json <| "key.annotated_decl"
-            <*> json <| "key.fully_annotated_decl"
-            <*> json <|? "key.doc.full_as_xml"
-            <*> json <| "key.typeusr"
+            <^> json["key.kind"]
+            <*> json["key.name"]
+            <*> json["key.usr"]
+            <*> json["key.typename"]
+            <*> json["key.annotated_decl"]
+            <*> json["key.fully_annotated_decl"]
+            <*> json[optional: "key.doc.full_as_xml"]
+            <*> json["key.typeusr"]
             <*> Cursor.DefinitionLocation.decode(json)
     }
 
@@ -66,12 +66,12 @@ extension Cursor : Argo.Decodable {
 extension Cursor.DefinitionLocation : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<Cursor.DefinitionLocation> {
-        let filepath: String? = (json <| "key.filepath").value
-        let offset: UInt64? = (json <| "key.offset").value
-        let length: UInt64? = (json <| "key.length").value
-        let isSystem: Bool = (json <| "key.is_system").value ?? false
-        let moduleName: String? = (json <| "key.modulename").value
-        let groupName: String? = (json <| "key.groupname").value
+        let filepath: String? = json["key.filepath"].value
+        let offset: UInt64? = json["key.offset"].value
+        let length: UInt64? = json["key.length"].value
+        let isSystem: Bool = json["key.is_system"].value ?? false
+        let moduleName: String? = json["key.modulename"].value
+        let groupName: String? = json["key.groupname"].value
 
         switch (filepath, offset, length, moduleName, groupName) {
         case let (f?, o?, l?, _, _):

@@ -26,7 +26,7 @@ class CompletionItemTests: XCTestCase {
 
     func testParseCompletionItems() {
         let json = loadJSONFromFixture("complete.json", in: "JSON/code-completion")
-        let foo: Decoded<[CompletionItem]> = json <|| "key.results"
+        let foo: Decoded<[CompletionItem]> = json["key.results"]
 
         switch foo {
         case .success(let bar):

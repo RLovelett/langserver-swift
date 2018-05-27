@@ -187,18 +187,18 @@ extension CompletionItem : Argo.Decodable {
     /// - Remark: Need to document:
     /// "key.name" : "#colorLiteral(red:green:blue:alpha:)"
     public static func decode(_ json: JSON) -> Decoded<CompletionItem> {
-        let description: Decoded<String> = json <| "key.description"
-        let kind: Decoded<CompletionItemKind?> = json <|? "key.kind"
-        let sourcetext: Decoded<String> = (json <| "key.sourcetext").flatMap(convert)
-        let type: Decoded<String?> = json <|? "key.typename"
-        let brief: Decoded<String?> = json <|? "key.doc.brief"
-        let context: Decoded<String> = json <| "key.context"
-        let bytesToErase: Decoded<Int> = json <| "key.num_bytes_to_erase"
+        let description: Decoded<String> = json["key.description"]
+        let kind: Decoded<CompletionItemKind?> = json[optional: "key.kind"]
+        let sourcetext: Decoded<String> = json["key.sourcetext"].flatMap(convert)
+        let type: Decoded<String?> = json[optional: "key.typename"]
+        let brief: Decoded<String?> = json[optional: "key.doc.brief"]
+        let context: Decoded<String> = json["key.context"]
+        let bytesToErase: Decoded<Int> = json["key.num_bytes_to_erase"]
 
-        let associatedUSRs: Decoded<String?> = json <|? "key.associated_usrs"
-        let name: Decoded<String> = json <| "key.name"
-        let module: Decoded<String?> = json <|? "key.modulename"
-        let notRecommended: Decoded<Bool?> = json <|? "key.not_recommended"
+        let associatedUSRs: Decoded<String?> = json[optional: "key.associated_usrs"]
+        let name: Decoded<String> = json["key.name"]
+        let module: Decoded<String?> = json[optional: "key.modulename"]
+        let notRecommended: Decoded<Bool?> = json[optional: "key.not_recommended"]
 
         let x = curry(CompletionItem.init)
             <^> description

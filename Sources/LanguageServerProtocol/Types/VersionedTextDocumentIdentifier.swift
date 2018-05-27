@@ -24,8 +24,8 @@ struct VersionedTextDocumentIdentifier : TextDocumentIdentifier {
 extension VersionedTextDocumentIdentifier : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<VersionedTextDocumentIdentifier> {
-        let uri: Decoded<URL> = json <| "uri"
-        let version: Decoded<Int> = json <| "version"
+        let uri: Decoded<URL> = json["uri"]
+        let version: Decoded<Int> = json["version"]
         return curry(VersionedTextDocumentIdentifier.init) <^> uri <*> version
     }
 

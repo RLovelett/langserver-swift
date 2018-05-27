@@ -17,7 +17,7 @@ private struct ArrayParams : Argo.Decodable {
     let x: [Int]
 
     static func decode(_ json: JSON) -> Decoded<ArrayParams> {
-        let a: Decoded<[Int]> = decodeArray(json)
+        let a: Decoded<[Int]> = [Int].decode(json)
         return curry(ArrayParams.init) <^> a
     }
 

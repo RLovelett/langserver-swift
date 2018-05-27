@@ -27,8 +27,8 @@ public struct Position {
 extension Position : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<Position> {
-        let l: Decoded<Int> = json <| "line"
-        let c: Decoded<Int> = json <| "character"
+        let l: Decoded<Int> = json["line"]
+        let c: Decoded<Int> = json["character"]
         return curry(Position.init) <^> l <*> c
     }
 

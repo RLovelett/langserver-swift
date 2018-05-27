@@ -88,11 +88,11 @@ public enum Request {
 
         let json = JSON(serialized)
 
-        let dMethod: Decoded<String> = (json <| "method")
-        let dId: Decoded<Identifier> = (json <| "id")
+        let dMethod: Decoded<String> = json["method"]
+        let dId: Decoded<Identifier> = json["id"]
         // A Structured value that holds the parameter values to be used during the invocation of
         // the method. This member MAY be omitted.
-        let dParams: Decoded<JSON> = (json <| "params") <|> pure(.null)
+        let dParams: Decoded<JSON> = json["params"] <|> pure(.null)
 
         switch (dMethod, dId, dParams) {
         case (.success(let m), .success(let i), .success(let j)):

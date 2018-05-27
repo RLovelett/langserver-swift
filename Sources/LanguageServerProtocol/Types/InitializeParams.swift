@@ -30,8 +30,8 @@ public struct InitializeParams {
 extension InitializeParams : Argo.Decodable {
 
     public static func decode(_ json: JSON) -> Decoded<InitializeParams> {
-        let p: Decoded<Int?> = json <|? "processId"
-        let r: Decoded<String?> = json <|? "rootPath"
+        let p: Decoded<Int?> = json[optional: "processId"]
+        let r: Decoded<String?> = json[optional: "rootPath"]
         return curry(InitializeParams.init) <^> p <*> r <*> pure(.none)
     }
     

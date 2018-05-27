@@ -26,8 +26,8 @@ struct TextDocumentRange {
 extension TextDocumentRange : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<TextDocumentRange> {
-        let start: Decoded<Position> = json <| "start"
-        let end: Decoded<Position> = json <| "end"
+        let start: Decoded<Position> = json["start"]
+        let end: Decoded<Position> = json["end"]
         return curry(TextDocumentRange.init) <^> start <*> end
     }
 

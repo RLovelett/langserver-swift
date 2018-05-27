@@ -26,8 +26,8 @@ extension FileEvent : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<FileEvent> {
         return curry(FileEvent.init)
-            <^> json <| "uri"
-            <*> json <| "type"
+            <^> json["uri"]
+            <*> json["type"]
     }
 
 }

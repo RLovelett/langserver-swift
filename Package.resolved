@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "Argo",
-        "repositoryURL": "https://github.com/thoughtbot/Argo.git",
+        "repositoryURL": "https://github.com/RLovelett/Argo.git",
         "state": {
-          "branch": null,
-          "revision": "203daf8fbebff84fb8d560acd3cad32a067b6189",
-          "version": "4.1.2"
+          "branch": "swift-4.1-macOS-and-linux",
+          "revision": "a3c76f404d2e5d9bf49206b1b7225ada31c24e26",
+          "version": null
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/thoughtbot/Curry.git",
         "state": {
           "branch": null,
-          "revision": "c9f1a37e0e12ad38af7933b9386bdc5f9e6222dc",
-          "version": "3.0.0"
+          "revision": "b6bf27ec9d711f607a8c7da9ca69ee9eaa201a22",
+          "version": "4.0.1"
         }
       },
       {
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/thoughtbot/Runes.git",
         "state": {
           "branch": null,
-          "revision": "e1bb1f7a589fe9172dc3410203f8b62373ea92a4",
-          "version": "4.1.0"
+          "revision": "30701f9587e31eca105318a5612691bf35a95d0b",
+          "version": "4.1.1"
         }
       },
       {

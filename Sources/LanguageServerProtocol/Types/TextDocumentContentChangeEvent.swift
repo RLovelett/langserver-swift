@@ -28,9 +28,9 @@ struct TextDocumentContentChangeEvent {
 extension TextDocumentContentChangeEvent : Argo.Decodable {
 
     static func decode(_ json: JSON) -> Decoded<TextDocumentContentChangeEvent> {
-        let range: Decoded<TextDocumentRange?> = json <|? "range"
-        let rangeLength: Decoded<Int?> = json <|? "rangeLength"
-        let text: Decoded<String> = json <| "text"
+        let range: Decoded<TextDocumentRange?> = json[optional: "range"]
+        let rangeLength: Decoded<Int?> = json[optional: "rangeLength"]
+        let text: Decoded<String> = json["text"]
         return curry(TextDocumentContentChangeEvent.init) <^> range <*> rangeLength <*> text
     }
 

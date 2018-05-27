@@ -83,10 +83,10 @@ extension TextDocument : Argo.Decodable {
     /// - Parameter json: The JSON from the client.
     /// - Returns: The result of decoding the JSON.
     public static func decode(_ json: JSON) -> Decoded<TextDocument> {
-        let uri: Decoded<URL> = json <| "uri"
-        let languageId: Decoded<String> = json <| "languageId"
-        let version: Decoded<Int> = json <| "version"
-        let text: Decoded<String> = json <| "text"
+        let uri: Decoded<URL> = json["uri"]
+        let languageId: Decoded<String> = json["languageId"]
+        let version: Decoded<Int> = json["version"]
+        let text: Decoded<String> = json["text"]
         return curry(TextDocument.init) <^> uri <*> languageId <*> version <*> text
     }
 
