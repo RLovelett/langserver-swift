@@ -35,6 +35,12 @@ public class RequestBuffer {
         #endif
     }
 
+    public func append(_ data: DispatchData) {
+        data.withUnsafeBytes { [count = data.count] in
+            buffer.append($0, count: count)
+        }
+    }
+
 }
 
 extension RequestBuffer : IteratorProtocol {
