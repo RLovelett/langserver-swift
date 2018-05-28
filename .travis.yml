@@ -1,5 +1,14 @@
 ---
-language: objective-c
+os:
+  - linux
+  - osx
+language: generic
+sudo: required
+dist: trusty
 osx_image: xcode9.3
+install:
+  - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
+env:
+  - SWIFT_VERSION=4.1.1
 script:
   - make ci

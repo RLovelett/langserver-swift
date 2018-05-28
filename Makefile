@@ -1,4 +1,10 @@
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Linux)
+DefaultBuildFlags=
+else ifeq ($(UNAME), Darwin)
 DefaultBuildFlags=-Xswiftc -target -Xswiftc x86_64-apple-macosx10.12
+endif
 DebugBuildFlags=$(DefaultBuildFlags)
 ReleaseBuildFlags=$(DefaultBuildFlags) -Xswiftc -static-stdlib -c release
 INSTALL_PATH?=/usr/local
@@ -45,7 +51,11 @@ print_target_build_dir: xcodeproj
 
 .PHONY: ci
 ## Operations to run for Continuous Integration
+ifeq ($(UNAME), Linux)
+ci: tools_versions debug test
+else ifeq ($(UNAME), Darwin)
 ci: tools_versions debug test release
+endif
 
 .PHONY: tools_versions
 ## Print the tools versions to STDOUT
