@@ -72,6 +72,8 @@ class CompletionItemTests: XCTestCase {
             XCTAssertEqual(item.kind, CompletionItemKind.Constructor)
             XCTAssertEqual(item.label, "(x: Int, y: String)")
             XCTAssertEqual(item.detail, "Test.Bar (x: Int, y: String)")
+            XCTAssertEqual(item.insertText, "x: ${1:Int}, y: ${2:String})")
+            XCTAssertEqual(item.insertTextFormat, .snippet)
             XCTAssertNil(item.documentation)
         case .failure(let e):
             XCTFail(e.description)

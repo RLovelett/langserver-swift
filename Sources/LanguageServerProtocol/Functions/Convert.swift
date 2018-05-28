@@ -19,12 +19,11 @@ fileprivate let regex = try! NSRegularExpression(pattern: "<#T##([^#]+)#(?:#[^#]
 ///
 /// ```
 /// let str = "fatalError(<#T##message: String##String#>)"
-/// convert(str).value! // "fatalError({{1:message: String}})"
+/// convert(str).value! // "fatalError(${1:message: String})"
 /// ```
 ///
 /// - Parameter sourceKit: A `String` possibly containing an SourceKit style snippet.
-/// - Returns: A `String` where any SourceKit style snippets have been converted to TextMate
-/// snippets.
+/// - Returns: A `String` where any SourceKit style snippets have been converted to TextMate snippets.
 func convert(_ sourceKit: String) -> Decoded<String> {
     var result = ""
     var lastRange = sourceKit.startIndex..<sourceKit.startIndex
@@ -39,7 +38,7 @@ func convert(_ sourceKit: String) -> Decoded<String> {
         }
         cursorIndex += 1
         result += sourceKit[lastRange.upperBound..<matchRange.lowerBound]
-        result += "{{\(cursorIndex):\(group)}}"
+        result += "${\(cursorIndex):\(group)}"
         lastRange = matchRange
     }
     result += sourceKit[lastRange.upperBound...]

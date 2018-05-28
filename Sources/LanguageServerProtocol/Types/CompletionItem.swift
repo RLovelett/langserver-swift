@@ -39,7 +39,18 @@ public struct CompletionItem {
 
     /// A string that should be inserted a document when selecting this completion. When `falsy` the
     /// label is used.
+    ///
+    /// The `insertText` is subject to interpretation by the client side. Some tools might not take the string
+    /// literally. For example VS Code when code complete is requested in this example `con<cursor position>` and a
+    /// completion item with an `insertText` of `console` is provided it will only insert `sole`. Therefore it is
+    /// recommended to use `textEdit` instead since it avoids additional client side interpretation.
+    ///
+    /// - Warning: This property is deprecated. Use `textEdit` instead.
     var insertText: String?
+
+    /// The format of the insert text. The format applies to both the `insertText` property and the `newText` property
+    /// of a provided `textEdit`.
+    var insertTextFormat: InsertTextFormat? = .snippet
 
     /// An edit which is applied to a document when selecting this completion. When an edit is
     /// provided the value of insertText is ignored.
@@ -90,6 +101,10 @@ extension CompletionItem : Ogra.Encodable {
 
         if let insertText = self.insertText {
             obj["insertText"] = JSON.string(insertText)
+        }
+
+        if let insertTextFormat = self.insertTextFormat {
+            obj["insertTextFormat"] = JSON.number(NSNumber(value: insertTextFormat.rawValue))
         }
 
         if let textEdit = self.textEdit {
