@@ -45,7 +45,7 @@ func findBinDirectory() -> AbsolutePath {
     }
     return AbsolutePath(foundPath).parentDirectory
     #else
-    return AbsolutePath("/usr/bin/swiftc").parentDirectory
+    return AbsolutePath("/home/rlovelett/Source/swift-source/rlovelett-installation/usr/bin/swiftc").parentDirectory
     #endif
 }
 
