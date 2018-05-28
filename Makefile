@@ -1,4 +1,4 @@
-DefaultBuildFlags=-Xswiftc -target -Xswiftc x86_64-apple-macosx10.11
+DefaultBuildFlags=-Xswiftc -target -Xswiftc x86_64-apple-macosx10.12
 DebugBuildFlags=$(DefaultBuildFlags)
 ReleaseBuildFlags=$(DefaultBuildFlags) -Xswiftc -static-stdlib -c release
 INSTALL_PATH?=/usr/local

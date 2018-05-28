@@ -7,10 +7,11 @@
 //
 
 import Foundation
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 import os.log
 
-@available(macOS 10.12, *)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "RequestBuffer")
+#endif
 private let terminatorPattern = Data(bytes: [0x0D, 0x0A, 0x0D, 0x0A]) // "\r\n\r\n"
 
 public class RequestBuffer {
@@ -22,14 +23,16 @@ public class RequestBuffer {
     }
 
     public func append(_ data: Data) {
-        if #available(macOS 10.12, *) {
+        #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
             os_log("Adding %{iec-bytes}d to the request buffer which has %{iec-bytes}d", log: log, type: .default, data.count, buffer.count)
-        }
+        #endif
         buffer.append(data)
-        if #available(macOS 10.12, *), let new = String(bytes: data, encoding: .utf8), let buffer = String(bytes: buffer, encoding: .utf8) {
+        #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+        if let new = String(bytes: data, encoding: .utf8), let buffer = String(bytes: buffer, encoding: .utf8) {
             os_log("Added: %{public}@", log: log, type: .default, new)
             os_log("Buffer: %{public}@", log: log, type: .default, buffer)
         }
+        #endif
     }
 
 }
@@ -46,10 +49,10 @@ extension RequestBuffer : IteratorProtocol {
         }
         defer {
             buffer.removeSubrange(Range<Data.Index>(buffer.startIndex..<index))
-            if #available(macOS 10.12, *) {
+            #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
                 let bytes = buffer.startIndex.distance(to: index)
                 os_log("Removing %{iec-bytes}d from the request buffer which has %{iec-bytes}d", log: log, type: .default, bytes, buffer.count)
-            }
+            #endif
 
         }
         return buffer.subdata(in: Range<Data.Index>(separatorRange.upperBound..<index))

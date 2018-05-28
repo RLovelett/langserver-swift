@@ -15,7 +15,9 @@ import class Build.BuildPlan
 import enum Build.TargetDescription
 import Commands
 import Foundation
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 import os.log
+#endif
 import struct PackageGraph.PackageGraphRootInput
 import class PackageLoading.ManifestLoader
 import class PackageModel.ResolvedTarget
@@ -23,8 +25,9 @@ import SourceKitter
 import struct Utility.BuildFlags
 import class Workspace.Workspace
 
-@available(macOS 10.12, *)
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
+#endif
 
 /// Find the bin directory that contains the Swift compiler.
 ///
@@ -233,11 +236,11 @@ public class Server {
         let url = at.textDocument.uri
         let (module, source) = try getSource(url)
         let offset = try Int64(source.lines.byteOffset(at: at.position))
-        if #available(macOS 10.12, *) {
+        #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
             os_log("%{public}@", log: log, type: .default, url as NSURL)
             os_log("Line %d, character %d, byte %d", log: log, type: .default, at.position.line, at.position.character, offset)
             os_log("%{public}@", log: log, type: .default, module.arguments.joined(separator: ", "))
-        }
+        #endif
         let result = SourceKit.CodeComplete(source: source.text, source: url, offset: offset, args: module.arguments)
             .request()
             .flatMap({ decodedJSON($0, forKey: "key.results") })
