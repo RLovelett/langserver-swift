@@ -42,7 +42,7 @@ test:
 .PHONY: xcodeproj
 ## Generate the Xcode project
 xcodeproj:
-	swift package generate-xcodeproj --xcconfig-overrides settings.xcconfig
+	swift package generate-xcodeproj --enable-code-coverage --xcconfig-overrides settings.xcconfig
 
 .PHONY: print_target_build_dir
 ## Print Xcode project's TARGET_BUILD_DIR value to use for debugging purposes
