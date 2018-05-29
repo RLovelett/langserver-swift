@@ -205,6 +205,11 @@ public class Server {
         }
     }
 
+    // Gets the string contents of an AEXMLElement, recursively, with spaces
+    // separating the individual element contents.
+    //
+    // deepString(doc: "<tag1><tag2>some text</tag2><tag2>here</tag2></tag1>")
+    // => "some text here"
     private func deepString(doc: AEXMLElement) -> String {
         return doc.children.count == 0 ?
             doc.string :
