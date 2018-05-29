@@ -233,7 +233,8 @@ public class Server {
             c.documentationAsXML
         ]
             .compactMap { $0 }
-            .map { deepString(doc: (try! AEXMLDocument(xml: $0)).root) }
+            .compactMap { try? AEXMLDocument(xml: $0) }
+            .map { deepString(doc: $0.root) }
             .map { MarkedString(language: "swift", value: $0) }
 
         switch c.defined {
