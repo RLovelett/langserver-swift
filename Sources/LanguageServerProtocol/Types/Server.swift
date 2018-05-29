@@ -24,6 +24,7 @@ import class PackageModel.ResolvedTarget
 import SourceKitter
 import struct Utility.BuildFlags
 import class Workspace.Workspace
+import AEXML
 
 #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
@@ -204,6 +205,17 @@ public class Server {
         }
     }
 
+    // Gets the string contents of an AEXMLElement, recursively, with spaces
+    // separating the individual element contents.
+    //
+    // deepString(doc: "<tag1><tag2>some text</tag2><tag2>here</tag2></tag1>")
+    // => "some text here"
+    private func deepString(doc: AEXMLElement) -> String {
+        return doc.children.count == 0 ?
+            doc.string :
+            doc.children.map(deepString).joined(separator: " ")
+    }
+
     /// Find information about a symbol.
     ///
     /// - Parameter at: A `TextDocument` and a position inside that document.
@@ -212,10 +224,18 @@ public class Server {
     public func cursor(forText at: TextDocumentPositionParams) throws -> Hover {
         // If the JSON is "malformed" (e.g., empty object) just return an empty `String`. No errors.
         guard let c = try getCursor(forText: at) else {
-            return Hover(contents: [""], range: .none)
+            return Hover(contents: [], range: .none)
         }
 
-        let contents = [c.annotatedDeclaration, c.fullyAnnotatedDeclaration, c.documentationAsXML].compactMap { $0 }
+        let contents: [MarkedString] = [
+            c.annotatedDeclaration,
+            c.fullyAnnotatedDeclaration,
+            c.documentationAsXML
+        ]
+            .compactMap { $0 }
+            .compactMap { try? AEXMLDocument(xml: $0) }
+            .map { deepString(doc: $0.root) }
+            .map { MarkedString(language: "swift", value: $0) }
 
         switch c.defined {
         case let .local(filepath, symbolOffset, symbolLength):
