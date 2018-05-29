@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "CSDJournal",
+        "repositoryURL": "https://github.com/felix91gr/Csdjournal.git",
+        "state": {
+          "branch": null,
+          "revision": "2bc89bbb56bd010efc2916e07eb9dddc6fbfb362",
+          "version": "1.2.0"
+        }
+      },
+      {
         "package": "Curry",
         "repositoryURL": "https://github.com/thoughtbot/Curry.git",
         "state": {

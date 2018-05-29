@@ -7,6 +7,7 @@
 //
 
 import Argo
+import CSDJournal
 import Curry
 import Foundation
 import Runes
@@ -95,6 +96,11 @@ public enum Request {
         // the method. This member MAY be omitted.
         let dParams: Decoded<JSON> = json["params"] <|> pure(.null)
 
+        csd_journal_print(LOG_DEBUG, #file, String(#line), #function, json.description)
+        csd_journal_print(LOG_DEBUG, #file, String(#line), #function, dMethod.description)
+        csd_journal_print(LOG_DEBUG, #file, String(#line), #function, dId.description)
+        csd_journal_print(LOG_DEBUG, #file, String(#line), #function, dParams.description)
+
         switch (dMethod, dId, dParams) {
         case (.success(let m), .success(let i), .success(let j)):
             self = .request(id: i, method: m, params: j)
@@ -124,6 +130,7 @@ extension Request.Identifier : Argo.Decodable {
         case .string(let s):
             return .success(.string(s))
         default:
+            csd_journal_print(LOG_DEBUG, #file, String(#line), #function, json.description)
             return .typeMismatch(expected: "String or Number", actual: json)
         }
     }

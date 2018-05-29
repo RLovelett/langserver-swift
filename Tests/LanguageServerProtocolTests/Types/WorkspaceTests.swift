@@ -37,3 +37,15 @@ class WorkspaceTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension WorkspaceTests {
+    static var allTests: [(String, (WorkspaceTests) -> () throws -> Void)] {
+        return [
+            ("testWorkspace", testWorkspace),
+        ]
+    }
+}
+
+#endif

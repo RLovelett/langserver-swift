@@ -45,7 +45,10 @@ class RequestTests: XCTestCase {
     }
 
     func testNotJSONContent() {
-        let message = invalid!
+        guard let message = invalid else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             _ = try Request(message)
@@ -57,7 +60,10 @@ class RequestTests: XCTestCase {
     }
 
     func testInvalidRequestJSON() {
-        let message = invalidRequest!
+        guard let message = invalidRequest else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             _ = try Request(message)
@@ -69,7 +75,10 @@ class RequestTests: XCTestCase {
     }
 
     func testValidRequest() {
-        let message = validWithoutHeader!
+        guard let message = validWithoutHeader else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             _ = try Request(message)
@@ -79,7 +88,10 @@ class RequestTests: XCTestCase {
     }
 
     func testInvalidHeader() {
-        let message = invalidHeader!
+        guard let message = invalidHeader else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             _ = try Request(message)
@@ -91,7 +103,10 @@ class RequestTests: XCTestCase {
     }
 
     func testValidHeaderAndRequest() {
-        let message = valid!
+        guard let message = valid else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             let r = try Request(message)
@@ -103,7 +118,10 @@ class RequestTests: XCTestCase {
     }
 
     func testParsingParameters() {
-        let message = valid!
+        guard let message = valid else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             let r = try Request(message)
@@ -115,7 +133,10 @@ class RequestTests: XCTestCase {
     }
 
     func testParsingIncorrectParameters() {
-        let message = valid2!
+        guard let message = valid2 else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             let r = try Request(message)
@@ -129,7 +150,10 @@ class RequestTests: XCTestCase {
     }
 
     func testShutdownRequest() {
-        let message = shutdown!
+        guard let message = shutdown else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             let r = try Request(message)
@@ -141,7 +165,10 @@ class RequestTests: XCTestCase {
     }
 
     func testTextDocumentDidOpen() {
-        let message = textDocumentDidOpen!
+        guard let message = textDocumentDidOpen else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         do {
             let r = try Request(message)
@@ -153,3 +180,25 @@ class RequestTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension RequestTests {
+    static var allTests: [(String, (RequestTests) -> () throws -> Void)] {
+        return [
+            ("testNotJSONContent", testNotJSONContent),   
+            ("testInvalidRequestJSON", testInvalidRequestJSON),   
+            ("testValidRequest", testValidRequest),
+
+            ("testInvalidHeader", testInvalidHeader),   
+            ("testValidHeaderAndRequest", testValidHeaderAndRequest),   
+            ("testParsingParameters", testParsingParameters),   
+
+            ("testParsingIncorrectParameters", testParsingIncorrectParameters),   
+            ("testShutdownRequest", testShutdownRequest),   
+            ("testTextDocumentDidOpen", testTextDocumentDidOpen),   
+        ]
+    }
+}
+
+#endif

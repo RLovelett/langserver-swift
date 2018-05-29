@@ -35,6 +35,7 @@ private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Wo
 ///
 /// - Returns: The absolute path to the bin directory containing the Swift compiler.
 func findBinDirectory() -> AbsolutePath {
+    #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
     let whichSwiftcArgs = ["xcrun", "--find", "swiftc"]
     // No value in env, so search for `clang`.
     let foundPath = (try? Process.checkNonZeroExit(arguments: whichSwiftcArgs).chomp()) ?? ""
@@ -43,6 +44,9 @@ func findBinDirectory() -> AbsolutePath {
         return AbsolutePath("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin")
     }
     return AbsolutePath(foundPath).parentDirectory
+    #else
+    return AbsolutePath("/home/rlovelett/Source/swift-source/rlovelett-installation/usr/bin/swiftc").parentDirectory
+    #endif
 }
 
 /// A directory on the local filesystem that contains all of the sources of the Swift project.

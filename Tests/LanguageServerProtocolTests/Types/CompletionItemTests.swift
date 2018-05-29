@@ -81,3 +81,18 @@ class CompletionItemTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension CompletionItemTests {
+    static var allTests: [(String, (CompletionItemTests) -> () throws -> Void)] {
+        return [
+            ("testParseCompletionItems", testParseCompletionItems),
+            ("testKeywordCompletionItem", testKeywordCompletionItem),    
+            ("testProtocolCompletionItem", testProtocolCompletionItem),
+            ("testConstructorCompletionItem", testConstructorCompletionItem),      
+        ]
+    }
+}
+
+#endif

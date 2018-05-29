@@ -12,7 +12,11 @@ import XCTest
 class RequestIteratorTests: XCTestCase {
 
     func testIteratingMultipleRequestsAndHeaders() {
-        let d = loadFixture("multiple-requests-and-headers.txt", in: "JSON-RPC/Requests")!
+        guard let d = loadFixture("multiple-requests-and-headers.txt", in: "JSON-RPC/Requests") else {
+            XCTFail("loadFixture failed")
+            return
+        }
+
         let c = Array(AnySequence { RequestBuffer(d) })
 
         XCTAssertEqual(c.count, 4)
@@ -20,7 +24,11 @@ class RequestIteratorTests: XCTestCase {
     }
 
     func testIteratingFullAndPartialRequestsWithoutCrash() {
-        let d = loadFixture("partial-request.txt", in: "JSON-RPC/Requests")!
+        guard let d = loadFixture("partial-request.txt", in: "JSON-RPC/Requests") else {
+            XCTFail("loadFixture failed")
+            return
+        }
+
         let it = RequestBuffer(d)
 
         let first = it.next()
@@ -33,9 +41,20 @@ class RequestIteratorTests: XCTestCase {
     }
 
     func testIteratingByAppendingBuffers() {
-        let d1 = loadFixture("partial-request-1.txt", in: "JSON-RPC/Requests")!
-        let d2 = loadFixture("partial-request-2.txt", in: "JSON-RPC/Requests")!
-        let d3 = loadFixture("partial-request-3.txt", in: "JSON-RPC/Requests")!
+        guard let d1 = loadFixture("partial-request-1.txt", in: "JSON-RPC/Requests") else {
+            XCTFail("loadFixture failed")
+            return
+        }
+
+        guard let d2 = loadFixture("partial-request-2.txt", in: "JSON-RPC/Requests") else {
+            XCTFail("loadFixture failed")
+            return
+        }
+
+        guard let d3 = loadFixture("partial-request-3.txt", in: "JSON-RPC/Requests") else {
+            XCTFail("loadFixture failed")
+            return
+        }
 
         let it = RequestBuffer(Data())
         // Since no data was sent to start it should have nothing in it
@@ -65,3 +84,17 @@ class RequestIteratorTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension RequestIteratorTests {
+    static var allTests: [(String, (RequestIteratorTests) -> () throws -> Void)] {
+        return [
+            ("testIteratingMultipleRequestsAndHeaders", testIteratingMultipleRequestsAndHeaders),   
+            ("testIteratingFullAndPartialRequestsWithoutCrash", testIteratingFullAndPartialRequestsWithoutCrash),   
+            ("testIteratingByAppendingBuffers", testIteratingByAppendingBuffers),   
+        ]
+    }
+}
+
+#endif

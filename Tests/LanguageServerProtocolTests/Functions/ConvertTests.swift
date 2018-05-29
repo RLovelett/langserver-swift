@@ -21,3 +21,15 @@ class ConvertTests: XCTestCase {
     }
 
 }
+
+#if os(Linux)
+
+extension ConvertTests {
+    static var allTests: [(String, (ConvertTests) -> () throws -> Void)] {
+        return [
+            ("testExample", testExample),   
+        ]
+    }
+}
+
+#endif
