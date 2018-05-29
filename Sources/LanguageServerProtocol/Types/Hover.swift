@@ -19,7 +19,21 @@ import Ogra
 /// ```
 ///
 /// `type MarkedString = string | { language: string; value: string };`
-typealias MarkedString = String
+public struct MarkedString {
+    let language: String
+    let value: String
+}
+
+extension MarkedString : Ogra.Encodable {
+
+    public func encode() -> JSON {
+        return JSON.object([
+            "language" : language.encode(),
+            "value" : value.encode(),
+        ])
+    }
+
+}
 
 /// The result of a hover request.
 public struct Hover {
