@@ -172,7 +172,7 @@ public class Server {
     private func getCursor(forText at: TextDocumentPositionParams) throws -> Cursor? {
         let url = at.textDocument.uri
         let (module, source) = try getSource(url)
-        let offset = try Int64(source.lines.byteOffset(at: at.position))
+        let offset = try Int64(source.byteOffset(at: at.position))
 
         // SourceKit may send back JSON that is an empty object. This is _not_ an error condition.
         // So we have to seperate SourceKit throwing an error from SourceKit sending back a
@@ -197,7 +197,7 @@ public class Server {
         switch c.defined {
         case let .local(filepath, symbolOffset, symbolLength):
             let (_, source) = try getSource(filepath)
-            let range = try source.lines.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
+            let range = try source.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
             let location = Location(uri: filepath.absoluteString, range: range)
             return [location]
         case .system(_):
@@ -240,7 +240,7 @@ public class Server {
         switch c.defined {
         case let .local(filepath, symbolOffset, symbolLength):
             let (_, source) = try getSource(filepath)
-            let range = try source.lines.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
+            let range = try source.selection(startAt: Int(symbolOffset), length: Int(symbolLength))
             return Hover(contents: contents, range: range)
         case .system(_):
             return Hover(contents: contents, range: .none)
@@ -255,7 +255,7 @@ public class Server {
     public func complete(forText at: TextDocumentPositionParams) throws -> [CompletionItem] {
         let url = at.textDocument.uri
         let (module, source) = try getSource(url)
-        let offset = try Int64(source.lines.byteOffset(at: at.position))
+        let offset = try Int64(source.byteOffset(at: at.position))
         #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
             os_log("%{public}@", log: log, type: .default, url as NSURL)
             os_log("Line %d, character %d, byte %d", log: log, type: .default, at.position.line, at.position.character, offset)
