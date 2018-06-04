@@ -204,6 +204,14 @@ public class Server {
             return []
         }
     }
+    
+    // Gets the string contents of an XML element, recursively
+    //
+    // deepString(doc: "<tag1><tag2>some text</tag2> <tag2>here</tag2></tag1>")
+    // => "some text here"
+    private func deepString(element: SWXMLHashXMLElement) -> String {
+        return element.recursiveText
+    }
 
     /// Find information about a symbol.
     ///
@@ -218,7 +226,8 @@ public class Server {
 
         let contents: [MarkedString] = [
             MarkedString(language: "swift", value: c.typename),
-            (SWXMLHash.parse(c.fullyAnnotatedDeclaration).element?.recursiveText)
+            (SWXMLHash.parse(c.fullyAnnotatedDeclaration).element)
+                .map { deepString(element: $0) }
                 .map { MarkedString(language: "swift", value: $0) },
             c.documentationAsXML
                 .map { SWXMLHash.parse($0).children[0].filterChildren { element, _ in element.name == "CommentParts" }.element }?
