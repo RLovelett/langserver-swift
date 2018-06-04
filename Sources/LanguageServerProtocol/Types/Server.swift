@@ -24,7 +24,7 @@ import class PackageModel.ResolvedTarget
 import SourceKitter
 import struct Utility.BuildFlags
 import class Workspace.Workspace
-import AEXML
+import SWXMLHash
 
 #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 private let log = OSLog(subsystem: "me.lovelett.langserver-swift", category: "Workspace")
@@ -204,16 +204,13 @@ public class Server {
             return []
         }
     }
-
-    // Gets the string contents of an AEXMLElement, recursively, with spaces
-    // separating the individual element contents.
+    
+    // Gets the string contents of an XML element, recursively
     //
-    // deepString(doc: "<tag1><tag2>some text</tag2><tag2>here</tag2></tag1>")
+    // deepString(doc: "<tag1><tag2>some text</tag2> <tag2>here</tag2></tag1>")
     // => "some text here"
-    private func deepString(doc: AEXMLElement) -> String {
-        return doc.children.count == 0 ?
-            doc.string :
-            doc.children.map(deepString).joined(separator: " ")
+    private func deepString(element: SWXMLHashXMLElement) -> String {
+        return element.recursiveText
     }
 
     /// Find information about a symbol.
@@ -228,14 +225,15 @@ public class Server {
         }
 
         let contents: [MarkedString] = [
-            c.annotatedDeclaration,
-            c.fullyAnnotatedDeclaration,
+            MarkedString(language: "swift", value: c.typename),
+            (SWXMLHash.parse(c.fullyAnnotatedDeclaration).element)
+                .map { deepString(element: $0) }
+                .map { MarkedString(language: "swift", value: $0) },
             c.documentationAsXML
+                .map { SWXMLHash.parse($0).children[0].filterChildren { element, _ in element.name == "CommentParts" }.element }?
+                .map { MarkedString(language: "markdown", value: $0.recursiveText) }
         ]
             .compactMap { $0 }
-            .compactMap { try? AEXMLDocument(xml: $0) }
-            .map { deepString(doc: $0.root) }
-            .map { MarkedString(language: "swift", value: $0) }
 
         switch c.defined {
         case let .local(filepath, symbolOffset, symbolLength):

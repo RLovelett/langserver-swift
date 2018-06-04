@@ -22,7 +22,7 @@ let package = Package(
         .package(url: "https://github.com/RLovelett/Ogra.git", .branch("master")),
         .package(url: "https://github.com/thoughtbot/Curry.git", from: "4.0.0"),
         .package(url: "https://github.com/RLovelett/swift-package-manager.git", .branch("swift-4.1-branch")),
-        .package(url: "https://github.com/tadija/AEXML.git", from: "4.3.0")
+        .package(url: "https://github.com/drmohundro/SWXMLHash.git", from: "4.0.0"),
     ],
     targets: [
         .target(
@@ -45,7 +45,7 @@ let package = Package(
                 "BaseProtocol",
                 "SourceKitter",
                 "SwiftPM",
-                "AEXML",
+                "SWXMLHash",
             ]
         ),
         .target(
