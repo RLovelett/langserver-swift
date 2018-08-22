@@ -123,7 +123,12 @@ public class Server {
             guard let source = module.sources[uri] else { continue }
             return (module, source)
         }
-        throw WorkspaceError.notFound(uri)
+        let singleFileModule = SwiftModule(uri.deletingLastPathComponent())
+        if let source = singleFileModule.sources[uri] {
+            return (singleFileModule, source)
+        } else {
+            throw WorkspaceError.notFound(uri)
+        }
     }
 
     // MARK: - Language Server Protocol methods
@@ -204,7 +209,7 @@ public class Server {
             return []
         }
     }
-    
+
     // Gets the string contents of an XML element, recursively
     //
     // deepString(doc: "<tag1><tag2>some text</tag2> <tag2>here</tag2></tag1>")
