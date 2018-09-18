@@ -182,10 +182,17 @@ public class Server {
         // SourceKit may send back JSON that is an empty object. This is _not_ an error condition.
         // So we have to seperate SourceKit throwing an error from SourceKit sending back a
         // "malformed" Cursor structure.
-        let result = SourceKit.CursorInfo(source: source.text, source: at.textDocument.uri, offset: offset, args: module.arguments)
+
+        let intraModuleResult = SourceKit.CursorInfo(source: source.text, source: at.textDocument.uri, offset: offset, args: module.arguments)
             .request()
             .flatMap(Cursor.decode)
-        return result.value
+
+        // TODO This doesn't work in all cases https://github.com/RLovelett/langserver-swift/issues/52
+        let interModuleResult = SourceKit.CursorInfo(source: source.text, source: at.textDocument.uri, offset: offset, args: module.arguments + modules.flatMap { $0.sources.keys.map { $0.path } })
+            .request()
+            .flatMap(Cursor.decode)
+
+        return intraModuleResult.value ?? interModuleResult.value
     }
 
     /// Find the definition of a symbol and provide the `Location` of same definition.
